@@ -1,15 +1,17 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+This module contains classes that help create pointillized images.
+"""
+
 import numpy as np
 from PIL import Image, ImageDraw
-from matplotlib import pyplot as plt
 from IPython.display import display
-
 from random import random
-from math import sqrt
-from math import floor,ceil
 import os
 import time
-
 import inspect
+
 
 class pointillize:
     """Base class for pointillzation project"""
@@ -25,61 +27,71 @@ class pointillize:
             self.filenames = []
             if os.path.isdir(location):
                 for file in os.listdir(location):
-                    if file.endswith(".jpg") | file.endswith(".JPG"): 
+                    if file.endswith(".jpg") | file.endswith(".JPG"):
                         self.filenames.append(location + file)
             else:
                 self.filenames.append(location)
-        
+
         # Open images and build arrays
-        self.__open_images()
-    
+        self._open_images()
+
         # Make blank canvases with borders
         self.border = kwargs.get('border', 100)
-        self.__newImage(self.border)
+        self._newImage(self.border)
 
         # Set debug state and initialize default params
         self.debug = kwargs.get('debug', False)
         self.params = {}
         self.params['complexity_radius'] = kwargs.get('complexity_radius', 10)
 
-    def __open_images(self):
+    def _open_images(self):
         """Opens images"""
         self.images = []
         for file in self.filenames:
             image = Image.open(file)
             self.images.append(image)
-        self.__build_arrays()
+        self._build_arrays()
 
-    def __build_arrays(self):
+    def _build_arrays(self):
         """Builds np arrays of self.images"""
         self.arrays = []
         for image in self.images:
-            self.arrays.append(np.array(image).astype('float'))       
-            
-    def __newImage(self, border):
+            self.arrays.append(np.array(image).astype('float'))
+
+    def _newImage(self, border):
         """Creates new blank canvas with border"""
         self.outs = []
         for image in self.images:
             h = image.size[1]
             w = image.size[0]
-            self.outs.append(Image.new('RGBA',[w+border*2, h+border*2],(255,255,255,0)))
-    
+            self.outs.append(Image.new('RGBA',
+                [w + (border * 2), h + (border * 2)], (255, 255, 255, 0)))
+
+    def print_attributes(self):
+        """Prints non-hidden object parameters"""
+        variables = vars(self)
+        for var in variables:
+            if var[0] != '_':
+                if var == 'arrays':
+                    print(var, ':', len(variables[var]), ' numpy array(s)   ')
+                else:
+                    print(var,': ', variables[var])
+
     def crop_Y(self, aspect, resize):
-        """Crops and resizes in the height dimension to match aspect ratio 
-        of [w,h], and resizes image to exact size if resize=True"""
-        
-        for i,image in enumerate(self.images):
+        """Crops and resizes in the height dimension to match aspect ratio"""
+
+        for i, image in enumerate(self.images):
             w = image.size[0]
             h = image.size[1]
-            h_new = w*aspect[1]//aspect[0]
-            image = image.crop((0,h//2 - h_new//2, w,h//2 + h_new//2))
+            h_new = w * aspect[1] // aspect[0]
+            image = image.crop((0 , h//2 - h_new//2, w, h//2 + h_new//2))
             if resize:
                 self.images[i] = image.resize([aspect[0],aspect[1]])
             else: 
                 self.images[i] = image
             
-        self.__build_arrays()
-        self.__newImage(self.border)
+        self._build_arrays()
+        self._newImage(self.border)
         
     def display(self):
         """Displays browser-size version of images"""
@@ -88,7 +100,7 @@ class pointillize:
             print(self.filenames[i])
             display(image.resize([1000,image.size[1]*1000//image.size[0]]))
 
-    def __getColorOfPixel(self, array, loc, r):
+    def _getColorOfPixel(self, array, loc, r):
         """Returns RGB tuple [0,255] of average color of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
         left = int(max(loc[0]-r,0))
@@ -103,11 +115,11 @@ class pointillize:
         B = int(array[np.ix_(y, x, [2])].mean())
         return (R,G,B)
 
-    def __plotColorPoint(self, image, array, loc, r):
+    def _plotColorPoint(self, image, array, loc, r):
         """Plots point at loc with size r with average color from 
         same in array"""
         border =self.border
-        color = self.__getColorOfPixel(array,loc,r)
+        color = self._getColorOfPixel(array,loc,r)
         draw = ImageDraw.Draw(image)
         w = image.size[0]
         h = image.size[1]
@@ -131,12 +143,12 @@ class pointillize:
             if fill:
                 for x in [int(x) for x in np.linspace(0, w, w//step)]:
                     for y in [int(y) for y in np.linspace(0, h, h//step)]:
-                        self.__plotColorPoint(image, array, [x,y], r)
+                        self._plotColorPoint(image, array, [x,y], r)
             else:
                 
                 for x in [int(x) for x in np.linspace(r, w-r, w//step)]:
                     for y in [int(y) for y in np.linspace(r, h-r, h//step)]:
-                        self.__plotColorPoint(image, array, [x,y], r)
+                        self._plotColorPoint(image, array, [x,y], r)
             self.outs[i] = image
         
         end = time.time()
@@ -155,14 +167,14 @@ class pointillize:
             for j in range(0,int(n)):
                 loc = [int(random()*w), int(random()*h)]
                 r = int((random()/2)**(power)*w*constant)*2**power+1
-                self.__plotColorPoint(image,array,loc,r)
+                self._plotColorPoint(image,array,loc,r)
             self.outs[i] = image
         
         end = time.time()
         if inspect.currentframe().f_back.f_code.co_name =='<module>':
             if self.debug: print('plotRandomPoints took %0.2f sec' % (end-start))
 
-    def __getComplexityOfPixel(self, array, loc, r):
+    def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average color of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
         left = max(loc[0]-r,0)
@@ -190,9 +202,9 @@ class pointillize:
             w = array.shape[1]
             for j in range(0,int(n)):
                 loc = [int(random()*w), int(random()*h)]
-                complexity = self.__getComplexityOfPixel(array,loc,self.params['complexity_radius'])
+                complexity = self._getComplexityOfPixel(array,loc,self.params['complexity_radius'])
                 r = int((complexity/2)**(power)*w*constant*2**power+1)
-                self.__plotColorPoint(image,array,loc,r)
+                self._plotColorPoint(image,array,loc,r)
             self.outs[i] = image
         
         end = time.time()
@@ -245,26 +257,35 @@ class pointillizeStack(pointillize):
     def run_queue(self, **kwargs):
         """Runs queue, primarily for build_stacks()"""
 
-        self._pointillize__newImage(self.border)    #TODO, unmangle these names
+        # Make new image
+        self._newImage(self.border)    
+        
+        # Set some parameters
         save_steps  = kwargs.get('save_steps', False)
+        current_frame_is_top = inspect.currentframe().f_back.f_code.co_name =='<module>'
+        to_print = True if self.debug & (current_frame_is_top | (save_steps == True)) else False
+        if (self.debug & ((inspect.currentframe().f_back.f_code.co_name =='<module>') |
+            (save_steps == True))):
+            to_print = True
+        else:
+            to_print = False
+
         if save_steps: 
-            assert(len(self.images)==1)
             if not dir().__contains__('self.image_stack'):
                 self.image_stack = []
         
-        for i,method in enumerate(self.queue['methods']):
-            
+        for i,method in enumerate(self.queue['methods']):    
 
             args = self.queue['args'][i]
             n = self.queue['repeats'][i]
 
-            print(method.__name__ + ':', end=' ')
+            if to_print: print(method.__name__ + ':', end=' ')
 
             for i in range(0,n):
                 if save_steps: self.image_stack.append(self.outs[0].copy())
                 method(*args)
-                print(i+1, end=' ')
-            print("done")
+                if to_print: print(i+1, end=' ')
+            if to_print: print("done")
                 
     def build_stacks(self, n,save_steps):
         """Makes an image stack by running the pipeline n times, saving intermediate steps
@@ -272,16 +293,21 @@ class pointillizeStack(pointillize):
 
         self.image_stack = []
 
+        to_print = True if ((self.debug == True) & (save_steps == False)) else False
+
+        if to_print: print('Building image: ', end=' ')
         for j in range(0,n):
-            self._pointillize__newImage(self.border)
+            if to_print: print(j, end=' ')
+            self._newImage(self.border)
             self.run_queue(save_steps = save_steps)
             self.image_stack.append(self.outs[0])
-
+        if to_print: print('done')
 
     def save_gif(self, location, step_duration):
         """Save a gif of the image stack"""
 
-        ## TODO figure out how to control step rate, or use the ImageIO option
+        # TODO figure out how to control step rate, or use the ImageIO option
+        # imageio.mimsave('example_animated.gif', arrays, duration = .1)
 
         image = self.image_stack[0]
         image.save(fp=location, format='gif', save_all=True, append_images=self.image_stack[1:])
