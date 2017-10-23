@@ -6,6 +6,7 @@ This module contains classes that help create pointillized images.
 
 import numpy as np
 from PIL import Image, ImageDraw
+import imageio
 from IPython.display import display
 from random import random
 import os
@@ -98,10 +99,13 @@ class pointillize:
         self._build_arrays()
         self._newImage(self.border)
 
-    def display(self):
-        """Displays browser-size version of images"""
+    def display(self, **kwargs):
+        """Displays browser-size version of outputs, or original images
+        if original=True"""
 
-        for i, image in enumerate(self.outs):
+        original = kwargs.get('original', False)
+        images = self.images if original else self.outs
+        for i, image in enumerate(images):
             print(self.filenames[i])
             display(image.resize(
                 [1000, image.size[1] * 1000 // image.size[0]]))
@@ -134,7 +138,8 @@ class pointillize:
 
     def plotRecPoints(self, step, r, fill):
         """Plots rectangular array of points over an image array,
-        if fill is True, fills frame, otherwise leaves border"""
+        where step is the step size in pixels, r is the radius in pixels,
+        and if fill is True, fills frame, otherwise leaves border"""
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
@@ -147,19 +152,21 @@ class pointillize:
             else:
 
                 for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
-                    for y in [int(y) for y in np.linspace(r, h - r, h // step)]:
+                    for y in [int(y) for y in np.linspace(r, h - r,
+                                                          h // step)]:
                         self._plotColorPoint(image, array, [x, y], r)
             self.outs[i] = image
         end = time.time()
-        if inspect.currentframe().f_back.f_code.co_name == '<module>':
-            if self.debug:
-                print('plotRecPoints took %0.2f sec' % (end - start))
+        frame_is_top = (inspect.currentframe()
+                        .f_back.f_code.co_name == '<module>')
+        if frame_is_top & self.debug:
+            print('plotRecPoints took %0.2f sec' % (end - start))
 
     def plotRandomPoints(self, n, constant, power):
-        """plots random points over image, where constant is
-        the portion of the width for the max size of the bubble,
-        and power pushes the distribution towards smaller bubbles"""
-
+        """Plots n random points over image, where constant is the portion
+        of the image width for the max size of the bubble, and power > 1
+        pushing the distribution towards smaller bubbles for increasing
+        complexity, and power [0,1] making the distribution flatter"""
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
@@ -172,9 +179,10 @@ class pointillize:
             self.outs[i] = image
 
         end = time.time()
-        if inspect.currentframe().f_back.f_code.co_name == '<module>':
-            if self.debug:
-                print('plotRandomPoints took %0.2f sec' % (end - start))
+        frame_is_top = (inspect.currentframe()
+                        .f_back.f_code.co_name == '<module>')
+        if frame_is_top & self.debug:
+            print('plotRandomPoints took %0.2f sec' % (end - start))
 
     def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average color of the np array
@@ -272,7 +280,7 @@ class pointillizeStack(pointillize):
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
 
-        to_print = True if (self.debug & (frame_is_top | save_steps)) else False
+        to_print = True if self.debug & (frame_is_top | save_steps) else False
 
         if (self.debug & (frame_is_top | save_steps)):
             to_print = True
@@ -305,7 +313,7 @@ class pointillizeStack(pointillize):
 
         self.image_stack = []
 
-        to_print = True if (self.debug & save_steps) else False
+        to_print = True if (self.debug & save_steps is not True) else False
 
         if to_print:
             print('Building image: ', end=' ')
@@ -319,11 +327,15 @@ class pointillizeStack(pointillize):
             print('done')
 
     def save_gif(self, location, step_duration):
-        """Save a gif of the image stack"""
+        """Save a gif of the image stack with step_duration"""
 
-        # TODO figure out how to control step rate, or use the ImageIO option
-        # imageio.mimsave('example_animated.gif', arrays, duration = .1)
+        arrays = []
+        for out in self.outs:
+            arrays.append(np.array(out))
 
-        image = self.image_stack[0]
-        image.save(fp=location, format='gif', save_all=True,
-                   append_images=self.image_stack[1:])
+        imageio.mimsave(location, arrays, duration=step_duration, loop=0)
+
+        # Deprecated, using PIL
+        # image = self.image_stack[0]
+        # image.save(fp=location, format='gif', save_all=True,
+        #           append_images=self.image_stack[1:])
