@@ -330,10 +330,10 @@ class pointillizeStack(pointillize):
         """Save a gif of the image stack with step_duration"""
 
         arrays = []
-        for out in self.outs:
+        for out in self.image_stack:
             arrays.append(np.array(out))
 
-        imageio.mimsave(location, arrays, duration=step_duration, loop=0)
+        imageio.mimsave(location, arrays, duration=step_duration)
 
         # Deprecated, using PIL
         # image = self.image_stack[0]
