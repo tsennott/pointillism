@@ -14,6 +14,8 @@ import time
 import inspect
 
 
+# Base class definitions, handles files and image manipulations
+
 class pointillize:
     """Base class for pointillzation project"""
 
@@ -140,6 +142,11 @@ class pointillize:
         """Plots rectangular array of points over an image array,
         where step is the step size in pixels, r is the radius in pixels,
         and if fill is True, fills frame, otherwise leaves border"""
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRecPoints:', end=' ')
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
@@ -156,17 +163,24 @@ class pointillize:
                                                           h // step)]:
                         self._plotColorPoint(image, array, [x, y], r)
             self.outs[i] = image
+            if to_print:
+                print(i + 1, end=' ')
         end = time.time()
         frame_is_top = (inspect.currentframe()
                         .f_back.f_code.co_name == '<module>')
-        if frame_is_top & self.debug:
-            print('plotRecPoints took %0.2f sec' % (end - start))
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
 
     def plotRandomPoints(self, n, constant, power):
         """Plots n random points over image, where constant is the portion
         of the image width for the max size of the bubble, and power > 1
         pushing the distribution towards smaller bubbles for increasing
         complexity, and power [0,1] making the distribution flatter"""
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRandomPoints:', end=' ')
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
@@ -177,12 +191,13 @@ class pointillize:
                 r = int((random() / 2)**(power) * w * constant) * 2**power + 1
                 self._plotColorPoint(image, array, loc, r)
             self.outs[i] = image
-
+            if to_print:
+                print(i + 1, end=' ')
         end = time.time()
         frame_is_top = (inspect.currentframe()
                         .f_back.f_code.co_name == '<module>')
-        if frame_is_top & self.debug:
-            print('plotRandomPoints took %0.2f sec' % (end - start))
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
 
     def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average color of the np array
@@ -206,6 +221,11 @@ class pointillize:
         """plots random points over image, where constant is
         the portion of the width for the max size of the bubble,
         and power pushes the distribution towards smaller bubbles"""
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRandomPointsComplexity:', end=' ')
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
@@ -219,12 +239,12 @@ class pointillize:
                         w * constant * 2**power + 1)
                 self._plotColorPoint(image, array, loc, r)
             self.outs[i] = image
+            if to_print:
+                print(i + 1, end=' ')
 
         end = time.time()
-        if inspect.currentframe().f_back.f_code.co_name == '<module>':
-            if self.debug:
-                print('plotRandomPointsComplexity took %0.2f sec' %
-                      (end - start))
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
@@ -240,8 +260,10 @@ class pointillize:
                 ' - ' + suffix + '.png')
 
 
+# Subclass adding workflows and image stack (gif) handling
+
 class pointillizeStack(pointillize):
-    """Subclass of pointillism for making stacks of images.
+    """Subclass of pointillize for making stacks of images.
     Only supports single images currently"""
 
     def __init__(self, *args, **kwargs):
@@ -282,11 +304,6 @@ class pointillizeStack(pointillize):
 
         to_print = True if self.debug & (frame_is_top | save_steps) else False
 
-        if (self.debug & (frame_is_top | save_steps)):
-            to_print = True
-        else:
-            to_print = False
-
         if save_steps:
             if not dir().__contains__('self.image_stack'):
                 self.image_stack = []
@@ -299,9 +316,9 @@ class pointillizeStack(pointillize):
                 print(method.__name__ + ':', end=' ')
 
             for i in range(0, n):
+                method(*args)
                 if save_steps:
                     self.image_stack.append(self.outs[0].copy())
-                method(*args)
                 if to_print:
                     print(i + 1, end=' ')
             if to_print:
@@ -319,14 +336,14 @@ class pointillizeStack(pointillize):
             print('Building image: ', end=' ')
         for j in range(0, n):
             if to_print:
-                print(j, end=' ')
+                print(j + 1, end=' ')
             self._newImage(self.border)
             self.run_queue(save_steps=save_steps)
             self.image_stack.append(self.outs[0])
         if to_print:
             print('done')
 
-    def save_gif(self, location, step_duration):
+    def save_gif(self, location, step_duration, **kwargs):
         """Save a gif of the image stack with step_duration"""
 
         arrays = []
@@ -339,3 +356,60 @@ class pointillizeStack(pointillize):
         # image = self.image_stack[0]
         # image.save(fp=location, format='gif', save_all=True,
         #           append_images=self.image_stack[1:])
+
+
+class pointillizePile(pointillizeStack):
+    """Subclass of pointillizeStack for operating serially on images, for
+    savings gifs of whole directories or processing large batches of files
+    where pointillize operating in parallel would be undesirable"""
+
+    def __init__(self, *args, **kwargs):
+
+        location = kwargs.get('location', False)
+        if location is False:
+            raise ValueError('Must declare directory to initialize')
+        else:
+            self.pile_filenames = []
+            if os.path.isdir(location):
+                for file in os.listdir(location):
+                    if file.endswith(".jpg") | file.endswith(".JPG"):
+                        self.pile_filenames.append(location + file)
+            else:
+                raise ValueError('Must declare directory to initialize')
+        self._kwargs = kwargs
+        self._args = args
+        self._init_pointilize(index=0)
+
+    def _init_pointilize(self, index):
+
+        args = self._args
+        kwargs = self._kwargs
+        kwargs['location'] = self.pile_filenames[index]
+        pointillize.__init__(self, *args, **kwargs)
+
+    def run_pile_images(self, location, **kwargs):
+        """Process and save files to location"""
+
+        print('Batch processing image:', end=' ')
+        for i in range(0, len(self.pile_filenames)):
+            print(i + 1, end=' ')
+            self._init_pointilize(i)
+            self.run_queue()
+            self.save_out(location, **kwargs)
+        print('done')
+
+    def run_pile_gifs(self, location, n, save_steps, step_duration, **kwargs):
+
+        suffix = kwargs.get('suffix', '')
+
+        if os.path.isdir(location) is not True:
+            os.makedirs(location)
+
+        for i in range(0, len(self.pile_filenames)):
+            print(i + 1, end=' ')
+            self._init_pointilize(i)
+            self.build_stacks(n, save_steps)
+            self.save_gif(location + '/' + self.filenames[0].split('/')[1] +
+                          ' ' + suffix + '.gif', step_duration, **kwargs, )
+
+
