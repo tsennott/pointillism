@@ -2,8 +2,12 @@ branch-defaults:
   default:
     environment: null
     group_suffix: null
+environment-defaults:
+  myproject:
+    branch: null
+    repository: null
 global:
-  application_name: django-point-test
+  application_name: myproject
   branch: null
   default_ec2_keyname: null
   default_platform: Python 3.4
