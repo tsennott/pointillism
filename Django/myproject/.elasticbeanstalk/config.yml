@@ -6,7 +6,7 @@ global:
   application_name: django-point-test
   branch: null
   default_ec2_keyname: null
-  default_platform: python3.4
+  default_platform: Python 3.4
   default_region: us-west-2
   include_git_submodules: true
   instance_profile: null

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 
 from myproject.myapp.models import Document
@@ -14,12 +14,19 @@ import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
+
+
+def show_guid(request, guid_id):
+    user = get_object_or_404(User, pk=guid_id)
+    return HttpResponse('Guid is: ' + str(user.guid))
+
+
 def list(request):
     # Handle file upload
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            user = User()
+            user = get_object_or_404(User, pk=guid_id)
             user.save()
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
