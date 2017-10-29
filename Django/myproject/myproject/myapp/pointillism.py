@@ -419,4 +419,4 @@ class pointillizePile(pointillizeStack):
             self._init_pointilize(i)
             self.build_stacks(n, save_steps)
             self.save_gif(location + '/' + self.filenames[0].split('/')[1] +
-                          ' ' + suffix + '.gif', step_duration, **kwargs, )
+                          ' ' + suffix + '.gif', step_duration, **kwargs)
