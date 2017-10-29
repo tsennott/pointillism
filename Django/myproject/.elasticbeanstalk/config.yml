@@ -1,6 +1,6 @@
 branch-defaults:
   default:
-    environment: null
+    environment: myproject
     group_suffix: null
 environment-defaults:
   myproject:

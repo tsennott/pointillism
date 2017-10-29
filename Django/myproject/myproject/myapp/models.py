@@ -9,7 +9,7 @@ class User(models.Model):
 
 
 def get_upload_dir(instance, filename):
-    return '{0}/{1}'.format(('Documents/' + str(instance.user.guid)), filename)
+    return '{0}/{1}'.format(('Documents/' + str(instance.user.pk)), filename)
 
 
 class Document(models.Model):

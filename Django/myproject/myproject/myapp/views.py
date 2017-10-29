@@ -16,18 +16,19 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 
-def show_guid(request, guid_id):
+def new_guid(request):
+    user = User()
+    user.save()
+    #request.session['guid_id'] = user.pk
+    return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))
+
+def list(request, guid_id):
+
     user = get_object_or_404(User, pk=guid_id)
-    return HttpResponse('Guid is: ' + str(user.guid))
-
-
-def list(request):
     # Handle file upload
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            user = get_object_or_404(User, pk=guid_id)
-            user.save()
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
             point = pointillize(image=orig_image)
@@ -46,16 +47,16 @@ def list(request):
             newdoc.save()
 
             # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('list'))
+            return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))
     else:
         form = DocumentForm()  # A empty, unbound form
 
     # Load documents for the list page
-    documents = Document.objects.all()
+    documents = user.document_set.all()
 
     # Render list page with the documents and the form
     return render(
         request,
         'list.html',
-        {'documents': documents, 'form': form}
+        {'documents': documents, 'form': form, 'guid_id': user.pk}
     )

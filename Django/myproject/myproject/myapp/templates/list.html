@@ -6,19 +6,14 @@
     </head>
 
     <body>
-        <!-- List of uploaded documents -->
-        {% if documents %}
-            <ul>
-                {% for document in documents %}
-                    <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No documents.</p>
-        {% endif %}
+        <h1>Minimal functional prototype of pointillism project</h1>
+        <p>This is a proof of concept for "pointillizing" photos. </p>
+        <p>Built in Python from scratch with Pillow, deployed in Django on AWS Elastic Beanstal</p>
+        <p>Github <a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">here</a></p>
 
         <!-- Upload form. Note enctype attribute! -->
-        <form action="{% url "list" %}" method="post" enctype="multipart/form-data">
+        <h2>Upload and pointillize new file:</h2>
+        <form action="{% url "list" guid_id=guid_id %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <p>{{ form.non_field_errors }}</p>
 
@@ -31,6 +26,19 @@
 
             <p><input type="submit" value="Upload"/></p>
         </form>
+
+        <!-- List of uploaded documents -->
+        <h2>Your Documents:</h2>
+        {% if documents %}
+            <ul>
+                {% for document in documents %}
+                    <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No documents yet.</p>
+        {% endif %}
+
     </body>
 
 </html>
