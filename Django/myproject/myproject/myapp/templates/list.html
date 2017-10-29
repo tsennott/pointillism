@@ -27,8 +27,8 @@
             <p><input type="submit" value="Upload"/></p>
         </form>
 
-        <!-- List of uploaded documents -->
-        <h2>Your Documents:</h2>
+        <!-- List of uploaded images -->
+        <h2>Your Images:</h2>
         {% if documents %}
             <ul>
                 {% for document in documents %}
@@ -36,7 +36,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No documents yet.</p>
+            <p>No images yet.</p>
         {% endif %}
 
     </body>
