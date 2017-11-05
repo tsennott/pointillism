@@ -13,5 +13,5 @@ def get_upload_dir(instance, filename):
 
 
 class Document(models.Model):
-    user = models.ForeignKey(User, default=uuid.uuid4, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=999, on_delete=models.CASCADE)
     docfile = models.FileField(upload_to=get_upload_dir)
