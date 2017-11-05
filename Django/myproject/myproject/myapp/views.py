@@ -18,6 +18,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 def new_guid(request):
     user = User()
+    user.name = 'New User'
     user.save()
     #request.session['guid_id'] = user.pk
     return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))

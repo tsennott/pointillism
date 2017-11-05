@@ -4,9 +4,10 @@ import uuid
 
 
 class User(models.Model):
-    guid = models.CharField(max_length=100, blank=True,
+    guid = models.CharField(max_length=100, blank=False,
                             unique=True, default=uuid.uuid4)
-
+    name = models.CharField(max_length=100, blank=True,
+                            unique=False, default="Names not yet implemented")
 
 def get_upload_dir(instance, filename):
     return '{0}/{1}'.format(('Documents/' + str(instance.user.pk)), filename)
