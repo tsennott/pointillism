@@ -94,24 +94,13 @@ if 'RDS_HOSTNAME' in os.environ:
             'PORT': os.environ['RDS_PORT'],
         }
     }
-elif 1==0:
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
-    }    
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'myproject',
-            'USER': 'postgres',
-            'PASSWORD': 'thermal3',
-            'HOST': 'localhost',
-            'PORT': '5432',
-            }
-        }
+    }
 
 
 # Internationalization
