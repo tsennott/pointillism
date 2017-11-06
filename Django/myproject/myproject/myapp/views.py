@@ -40,12 +40,14 @@ def list(request, guid_id):
                                   orig_file.content_type.split('/')[-1].upper())
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
-                                            'out.jpg',
+                                            (orig_file.name.split('.')[0] + ' pointillized.jpg'),
                                             orig_file.content_type,
                                             None,
                                             None)
             newdoc = user.document_set.create(docfile=new_file)
             newdoc.save()
+            origdoc = user.document_set.create(docfile=orig_file)
+            origdoc.save()
 
             # Redirect to the document list after POST
             return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))

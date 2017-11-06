@@ -10,7 +10,7 @@ class User(models.Model):
                             unique=False, default="Names not yet implemented")
 
 def get_upload_dir(instance, filename):
-    return '{0}/{1}'.format(('Documents/' + str(instance.user.pk)), filename)
+    return (str(instance.user.pk) + ' ' + filename)
 
 
 class Document(models.Model):

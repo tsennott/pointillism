@@ -7,7 +7,7 @@
 
     <body>
         <h1>Minimal functional prototype of pointillism project</h1>
-        <p>This is a proof of concept for "pointillizing" photos. </p>
+        <p>This is a proof of concept for "pointillizing" photos. Landscapes, bold colors and/or contrast work best.</p>
         <p>Built in Python from scratch with Pillow, deployed using Django on AWS Elastic Beanstalk.</p>
         <p>Github <a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">here</a>.
             Example outputs <a href="https://photos.app.goo.gl/SAQ1DMLrkVxoyjGB3">here</a></p>
@@ -29,7 +29,7 @@
         </form>
 
         <!-- List of uploaded images -->
-        <h2>Your Images:</h2>
+        <h2>Your Images (user {{ guid_id }}):</h2>
         {% if documents %}
             <ul>
                 {% for document in documents %}
