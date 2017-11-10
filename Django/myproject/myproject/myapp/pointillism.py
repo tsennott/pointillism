@@ -16,6 +16,7 @@ import inspect
 
 # Base class definitions, handles files and image manipulations
 
+
 class pointillize:
     """Base class for pointillzation project"""
 
@@ -24,22 +25,24 @@ class pointillize:
 
         image = kwargs.get('image', False)
         if image is False:
+
             # Build list of filenames
             location = kwargs.get('location', False)
+
             if location is False:
                 raise ValueError('Must declare image or dir to initialize')
+
             else:
                 self.filenames = []
-                if os.path.isdir(location):
-                    for file in os.listdir(location):
-                        if (file.endswith(".jpg") | file.endswith(".JPG") |
-                                file.endswith(".png") | file.endswith(".PNG")):
-                            self.filenames.append(location + file)
-                else:
-                    self.filenames.append(location)
 
-            # Open images and build arrays
-            self._open_images()
+            if os.path.isdir(location):
+                for file in os.listdir(location):
+                    if (file.endswith(".jpg") | file.endswith(".JPG") |
+                       file.endswith(".png") | file.endswith(".PNG")):
+                        self.filenames.append(location + file)
+
+            else:
+                self.filenames.append(location)
 
         else:
             self.images = [image]
@@ -179,6 +182,41 @@ class pointillize:
         if to_print:
             print('done...took %0.2f sec' % (end - start))
 
+    def plotRecPointsFill(self, n, fill):
+        """Plots symmetrical array of points over an image array,
+        where n is the number of points across the horizontal,
+        and if fill is True, fills frame, otherwise leaves border"""
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRecPoints:', end=' ')
+        start = time.time()
+        for i, image in enumerate(self.outs):
+            array = self.arrays[i]
+            h = array.shape[0]
+            w = array.shape[1]
+            step = w/n
+            r = step
+            if fill:
+                for x in [int(x) for x in np.linspace(0, w, w // step)]:
+                    for y in [int(y) for y in np.linspace(0, h, h // step)]:
+                        self._plotColorPoint(image, array, [x, y], r)
+            else:
+
+                for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
+                    for y in [int(y) for y in np.linspace(r, h - r,
+                                                          h // step)]:
+                        self._plotColorPoint(image, array, [x, y], r)
+            self.outs[i] = image
+            if to_print:
+                print(i + 1, end=' ')
+        end = time.time()
+        frame_is_top = (inspect.currentframe()
+                        .f_back.f_code.co_name == '<module>')
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
+
     def plotRandomPoints(self, n, constant, power):
         """Plots n random points over image, where constant is the portion
         of the image width for the max size of the bubble, and power > 1
@@ -244,7 +282,7 @@ class pointillize:
                 complexity = self._getComplexityOfPixel(
                     array, loc, self.params['complexity_radius'])
                 r = int((complexity / 2)**(power) *
-                        w * constant * 2**power + 1)
+                        w * constant * 2**power + 5)
                 self._plotColorPoint(image, array, loc, r)
             self.outs[i] = image
             if to_print:
@@ -396,7 +434,7 @@ class pointillizePile(pointillizeStack):
         pointillize.__init__(self, *args, **kwargs)
 
     def run_pile_images(self, location, **kwargs):
-        """Run serially through image pile to process and save files"""
+        """Process and save files to location"""
 
         print('Batch processing image:', end=' ')
         for i in range(0, len(self.pile_filenames)):
@@ -407,7 +445,6 @@ class pointillizePile(pointillizeStack):
         print('done')
 
     def run_pile_gifs(self, location, n, save_steps, step_duration, **kwargs):
-        """ Runs serially through image pile and saves images gifs"""
 
         suffix = kwargs.get('suffix', '')
 

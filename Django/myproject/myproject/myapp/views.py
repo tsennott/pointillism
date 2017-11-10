@@ -33,7 +33,7 @@ def list(request, guid_id):
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
             point = pointillize(image=orig_image)
-            point.plotRecPoints(step=100, r=100, fill=False)
+            point.plotRecPointsFill(n=20, fill=False)
             point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.0)
             new_stringIO = io.BytesIO()
             point.outs[0].convert('RGB').save(new_stringIO,
