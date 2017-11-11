@@ -44,6 +44,9 @@ class pointillize:
             else:
                 self.filenames.append(location)
 
+            self._open_images()
+            self._build_arrays()
+
         else:
             self.images = [image]
             self.filenames = ['none']
@@ -56,7 +59,7 @@ class pointillize:
         # Set debug state and initialize default params
         self.debug = kwargs.get('debug', False)
         self.params = {}
-        self.params['complexity_radius'] = kwargs.get('complexity_radius', 10)
+        self.params['complexity_radius'] = kwargs.get('complexity_radius', 20)
 
     def _open_images(self):
         """Opens images"""
@@ -246,7 +249,7 @@ class pointillize:
             print('done...took %0.2f sec' % (end - start))
 
     def _getComplexityOfPixel(self, array, loc, r):
-        """Returns value [0,1] of average color of the np array
+        """Returns value [0,1] of average complexity of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
         left = max(loc[0] - r, 0)
         right = min(loc[0] + r, array.shape[1])
@@ -280,7 +283,7 @@ class pointillize:
             for j in range(0, int(n)):
                 loc = [int(random() * w), int(random() * h)]
                 complexity = self._getComplexityOfPixel(
-                    array, loc, self.params['complexity_radius'])
+                    array, loc, int(w * constant / 2))
                 r = int((complexity / 2)**(power) *
                         w * constant * 2**power + 5)
                 self._plotColorPoint(image, array, loc, r)
