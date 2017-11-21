@@ -23,6 +23,11 @@ class pointillize:
     def __init__(self, *args, **kwargs):
         """Initiialize with image or directory"""
 
+        # Set debug state and initialize default params
+        self.debug = kwargs.get('debug', False)
+        self.params = {}
+        self.params['reduce_factor'] = kwargs.get('reduce_factor', 1)
+
         image = kwargs.get('image', False)
         if image is False:
 
@@ -56,11 +61,6 @@ class pointillize:
         self.border = kwargs.get('border', 100)
         self._newImage(self.border)
 
-        # Set debug state and initialize default params
-        self.debug = kwargs.get('debug', False)
-        self.params = {}
-        self.params['complexity_radius'] = kwargs.get('complexity_radius', 20)
-
     def _open_images(self):
         """Opens images"""
         self.images = []
@@ -73,7 +73,12 @@ class pointillize:
         """Builds np arrays of self.images"""
         self.arrays = []
         for image in self.images:
-            self.arrays.append(np.array(image).astype('float'))
+            self.params['reduce_factor'] = min(self.params['reduce_factor'],
+                                               image.size[0] / 1000)
+            w = int(image.size[0]/self.params['reduce_factor'])
+            h = int(image.size[1]/self.params['reduce_factor'])
+            resized = image.resize([w, h])
+            self.arrays.append(np.array(resized).astype('float'))
 
     def _newImage(self, border):
         """Creates new blank canvas with border"""
@@ -129,6 +134,9 @@ class pointillize:
     def _getColorOfPixel(self, array, loc, r):
         """Returns RGB tuple [0,255] of average color of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
+        loc = [int(loc[0]/self.params['reduce_factor']), 
+               int(loc[1]/self.params['reduce_factor'])]
+        r = int(r/self.params['reduce_factor'])
         left = int(max(loc[0] - r, 0))
         right = int(min(loc[0] + r, array.shape[1]))
         bottom = int(max(loc[1] - r, 0))
@@ -164,8 +172,8 @@ class pointillize:
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
-            h = array.shape[0]
-            w = array.shape[1]
+            h = array.shape[0]*self.params['reduce_factor']
+            w = array.shape[1]*self.params['reduce_factor']
             if fill:
                 for x in [int(x) for x in np.linspace(0, w, w // step)]:
                     for y in [int(y) for y in np.linspace(0, h, h // step)]:
@@ -197,8 +205,8 @@ class pointillize:
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
-            h = array.shape[0]
-            w = array.shape[1]
+            h = array.shape[0]*self.params['reduce_factor']
+            w = array.shape[1]*self.params['reduce_factor']
             step = w/n
             r = step
             if fill:
@@ -233,8 +241,8 @@ class pointillize:
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
-            h = array.shape[0]
-            w = array.shape[1]
+            h = array.shape[0]*self.params['reduce_factor']
+            w = array.shape[1]*self.params['reduce_factor']
             for j in range(0, int(n)):
                 loc = [int(random() * w), int(random() * h)]
                 r = int((random() / 2)**(power) * w * constant) * 2**power + 1
@@ -251,6 +259,9 @@ class pointillize:
     def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average complexity of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
+        loc = [int(loc[0]/self.params['reduce_factor']),
+               int(loc[1]/self.params['reduce_factor'])]
+        r = int(r/self.params['reduce_factor'])
         left = max(loc[0] - r, 0)
         right = min(loc[0] + r, array.shape[1])
         bottom = max(loc[1] - r, 0)
@@ -278,14 +289,14 @@ class pointillize:
         start = time.time()
         for i, image in enumerate(self.outs):
             array = self.arrays[i]
-            h = array.shape[0]
-            w = array.shape[1]
+            h = array.shape[0]*self.params['reduce_factor']
+            w = array.shape[1]*self.params['reduce_factor']
             for j in range(0, int(n)):
                 loc = [int(random() * w), int(random() * h)]
                 complexity = self._getComplexityOfPixel(
                     array, loc, int(w * constant / 2))
-                r = int((complexity / 2)**(power) *
-                        w * constant * 2**power + 5)
+                r = np.ceil((complexity / 2)**(power) *
+                            w * constant * 2**power + w/1000)
                 self._plotColorPoint(image, array, loc, r)
             self.outs[i] = image
             if to_print:
