@@ -26,7 +26,7 @@ class pointillize:
         # Set debug state and initialize default params
         self.debug = kwargs.get('debug', False)
         self.params = {}
-        self.params['reduce_factor'] = 5
+        self.params['reduce_factor'] = kwargs.get('reduce_factor', 1)
 
         image = kwargs.get('image', False)
         if image is False:
@@ -73,8 +73,11 @@ class pointillize:
         """Builds np arrays of self.images"""
         self.arrays = []
         for image in self.images:
-            resized = image.resize([int(image.size[0]/self.params['reduce_factor']),
-                                   int(image.size[1]/self.params['reduce_factor'])])
+            self.params['reduce_factor'] = min(self.params['reduce_factor'],
+                                               image.size[0] / 1000)
+            w = int(image.size[0]/self.params['reduce_factor'])
+            h = int(image.size[1]/self.params['reduce_factor'])
+            resized = image.resize([w, h])
             self.arrays.append(np.array(resized).astype('float'))
 
     def _newImage(self, border):
@@ -292,8 +295,8 @@ class pointillize:
                 loc = [int(random() * w), int(random() * h)]
                 complexity = self._getComplexityOfPixel(
                     array, loc, int(w * constant / 2))
-                r = int((complexity / 2)**(power) *
-                        w * constant * 2**power + 5)
+                r = np.ceil((complexity / 2)**(power) *
+                            w * constant * 2**power + w/1000)
                 self._plotColorPoint(image, array, loc, r)
             self.outs[i] = image
             if to_print:
