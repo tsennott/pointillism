@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Pointillizer!</title>
+    </head>
+    <meta name="viewport" content="width=device-width">
+    <body>
+
+        <h1>Pointillizer!</h1>
+        <p>Info <a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">here</a>.
+        <p>Upload images <a href={% url 'new_guid' %}>here</a>.
+        <!-- List of uploaded images -->
+        <h2>Gallery:</h2>
+        {% load thumbnail %}
+        {% if documents %}
+                {% for document in documents %}
+                    <a href="{{ document.docfile.url }}">
+                        {% thumbnail document.docfile.url "300x300" crop="center" as im %}
+                        <img src="{{ im.url }}">
+                        {% endthumbnail %}
+                    </a><br>
+                {% endfor %}
+        {% else %}
+            <p>No images yet, upload one!</p>
+        {% endif %}
+
+    </body>
+
+</html>

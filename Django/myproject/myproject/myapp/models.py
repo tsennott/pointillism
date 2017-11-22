@@ -9,6 +9,7 @@ class User(models.Model):
     name = models.CharField(max_length=100, blank=True,
                             unique=False, default="Names not yet implemented")
 
+
 def get_upload_dir(instance, filename):
     return (str(instance.user.pk) + ' ' + filename)
 

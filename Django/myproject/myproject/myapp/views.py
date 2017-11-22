@@ -14,14 +14,14 @@ import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
-
-
 def new_guid(request):
     user = User()
     user.name = 'New User'
     user.save()
-    #request.session['guid_id'] = user.pk
-    return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))
+    # request.session['guid_id'] = user.pk
+    return HttpResponseRedirect(reverse('list',
+                                        kwargs={'guid_id': user.pk}))
+
 
 def list(request, guid_id):
 
@@ -37,10 +37,12 @@ def list(request, guid_id):
             point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.0)
             new_stringIO = io.BytesIO()
             point.outs[0].convert('RGB').save(new_stringIO,
-                                  orig_file.content_type.split('/')[-1].upper())
+                                              orig_file.content_type.split('/')
+                                              [-1].upper())
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
-                                            (orig_file.name.split('.')[0] + ' pointillized.jpg'),
+                                            (orig_file.name.split('.')[0] +
+                                             ' pointillized.jpg'),
                                             orig_file.content_type,
                                             None,
                                             None)
@@ -50,7 +52,8 @@ def list(request, guid_id):
             origdoc.save()
 
             # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('list', kwargs={'guid_id':user.pk}))
+            return HttpResponseRedirect(reverse('list',
+                                                kwargs={'guid_id': user.pk}))
     else:
         form = DocumentForm()  # A empty, unbound form
 
@@ -63,3 +66,14 @@ def list(request, guid_id):
         'list.html',
         {'documents': documents, 'form': form, 'guid_id': user.pk}
     )
+
+
+def gallery(request):
+
+    all_documents = Document.objects.order_by("-id")
+    documents = []
+    for document in all_documents:
+        if document.docfile.name[-16:] == 'pointillized.jpg':
+            documents.append(document)
+
+    return render(request, 'gallery.html', {'documents': documents})

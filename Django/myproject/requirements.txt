@@ -35,3 +35,4 @@ traitlets==4.3.2
 typing==3.6.2
 wcwidth==0.1.7
 wincertstore==0.2
+sorl-thumbnail==12.4.1
