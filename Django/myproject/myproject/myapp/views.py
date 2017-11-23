@@ -19,11 +19,11 @@ def new_guid(request):
     user.name = 'New User'
     user.save()
     # request.session['guid_id'] = user.pk
-    return HttpResponseRedirect(reverse('list',
+    return HttpResponseRedirect(reverse('upload',
                                         kwargs={'guid_id': user.pk}))
 
 
-def list(request, guid_id):
+def upload(request, guid_id):
 
     user = get_object_or_404(User, pk=guid_id)
     # Handle file upload
@@ -51,23 +51,23 @@ def list(request, guid_id):
             origdoc = user.document_set.create(docfile=orig_file)
             origdoc.save()
 
-            # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('list',
+            # Redirect to the document upload page after POST
+            return HttpResponseRedirect(reverse('upload',
                                                 kwargs={'guid_id': user.pk}))
     else:
         form = DocumentForm()  # A empty, unbound form
 
-    # Load documents for the list page
+    # Load documents for the upload page
     all_documents = user.document_set.all()
     documents = []
     for document in all_documents:
             if document.docfile.name[-16:] == 'pointillized.jpg':
                 documents.append(document)
 
-    # Render list page with the documents and the form
+    # Render upload page with the documents and the form
     return render(
         request,
-        'list.html',
+        'upload.html',
         {'documents': documents, 'form': form, 'guid_id': user.pk}
     )
 
