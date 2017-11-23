@@ -27,9 +27,14 @@
 
         <!-- List of uploaded images -->
         <h2>Images (User {{ guid_id }}):</h2>
+        {% load thumbnail %}
         {% if documents %}
                 {% for document in documents %}
-                    <a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a><br>
+                    <a href="{{ document.docfile.url }}">
+                        {% thumbnail document.docfile.url "300x300" crop="center" as im %}
+                        <img src="{{ im.url }}">
+                        {% endthumbnail %}
+                    </a><br>
                 {% endfor %}
         {% else %}
             <p>No images yet, upload one!</p>

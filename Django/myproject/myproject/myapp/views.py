@@ -58,7 +58,11 @@ def list(request, guid_id):
         form = DocumentForm()  # A empty, unbound form
 
     # Load documents for the list page
-    documents = user.document_set.all()
+    all_documents = user.document_set.all()
+    documents = []
+    for document in all_documents:
+            if document.docfile.name[-16:] == 'pointillized.jpg':
+                documents.append(document)
 
     # Render list page with the documents and the form
     return render(
