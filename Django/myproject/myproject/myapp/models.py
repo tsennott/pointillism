@@ -17,3 +17,12 @@ def get_upload_dir(instance, filename):
 class Document(models.Model):
     user = models.ForeignKey(User, default=999, on_delete=models.CASCADE)
     docfile = models.FileField(upload_to=get_upload_dir)
+    gallery = models.BooleanField(default=False)
+
+    def image_img(self):
+                if self.docfile:
+                    return u'<img src="%s" width="150" height="150" />' % self.docfile.url
+                else:
+                    return '(No image found)'
+    image_img.short_description = 'Thumb'
+    image_img.allow_tags = True

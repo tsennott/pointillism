@@ -77,7 +77,7 @@ def gallery(request):
     all_documents = Document.objects.order_by("-id")
     documents = []
     for document in all_documents:
-        if document.docfile.name[-16:] == 'pointillized.jpg':
+        if ((document.docfile.name[-16:] == 'pointillized.jpg') & (document.gallery)):
             documents.append(document)
 
     return render(request, 'gallery.html', {'documents': documents})
