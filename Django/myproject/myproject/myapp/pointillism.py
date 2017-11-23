@@ -51,6 +51,7 @@ class pointillize:
 
     def _build_arrays(self):
         """Builds np arrays of self.images"""
+
         self.params['reduce_factor'] = min(self.params['reduce_factor'],
                                            self.image.size[0] / 1000)
         w = int(self.image.size[0]/self.params['reduce_factor'])
@@ -128,6 +129,7 @@ class pointillize:
     def _plotColorPoint(self, loc, r):
         """Plots point at loc with size r with average color from
         same in array"""
+
         border = self.border
         color = self._getColorOfPixel(loc, r)
         if self.point_queue:
@@ -143,6 +145,7 @@ class pointillize:
         where n is the number of points across the horizontal,
         and multiplier is the ratio of the radius to the step
         and if fill is True, fills frame, otherwise leaves border"""
+
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
         to_print = True if self.debug & frame_is_top else False
@@ -430,7 +433,8 @@ class pointillizePile(pointillizeStack):
             self.save_gif(location + '/' + self.filename.split('/')[1] +
                           ' ' + suffix + '.gif', step_duration, **kwargs)
 
-    def run_pile_multipliers(self, location, multipliers, step_duration, **kwargs):
+    def run_pile_multipliers(self, location, multipliers,
+                             step_duration, **kwargs):
 
         suffix = kwargs.get('suffix', '')
 
