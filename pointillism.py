@@ -215,8 +215,8 @@ class pointillize:
             loc = [int(random() * w), int(random() * h)]
             complexity = self._getComplexityOfPixel(
                 self.array, loc, int(w * constant / 2))
-            r = int((complexity / 2)**(power) *
-                    w * constant * 2**power + 5)
+            r = np.ceil((complexity / 2)**(power) *
+                        w * constant * 2**power + w/1000)
             self._plotColorPoint(loc, r)
 
         end = time.time()
