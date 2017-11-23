@@ -33,10 +33,10 @@ def upload(request, guid_id):
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
             point = pointillize(image=orig_image, reduce_factor=2)
-            point.plotRecPointsFill(n=40, fill=False)
-            point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.0)
+            point.plotRecPoints(n=40, multiplier=1, fill=False)
+            point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             new_stringIO = io.BytesIO()
-            point.outs[0].convert('RGB').save(new_stringIO,
+            point.out.convert('RGB').save(new_stringIO,
                                               orig_file.content_type.split('/')
                                               [-1].upper())
             new_file = InMemoryUploadedFile(new_stringIO,
