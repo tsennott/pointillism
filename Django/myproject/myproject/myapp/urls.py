@@ -6,6 +6,8 @@ from myproject.myapp.views import gallery
 
 urlpatterns = [
     url(r'^$', new_guid, name='new_guid'),
-    url(r'^(?P<guid_id>[0-9]+)$', upload, name='upload'),
+    # url(r'^(?P<guid_id>[0-9]+)$', upload, name='upload'),
+    url(r'^upload/(?P<guid_id>[0-9]+)$', upload, name='upload'),
+    url(r'^gallery/(?P<guid_id>[0-9]+)$', gallery, name='gallery'),
     url(r'^gallery/', gallery, name='gallery')
 ]

@@ -72,7 +72,7 @@ def upload(request, guid_id):
     )
 
 
-def gallery(request):
+def gallery(request, guid_id):
 
     all_documents = Document.objects.order_by("-id")
     documents = []
@@ -80,4 +80,5 @@ def gallery(request):
         if ((document.docfile.name[-16:] == 'pointillized.jpg') & (document.gallery)):
             documents.append(document)
 
-    return render(request, 'gallery.html', {'documents': documents})
+    return render(request, 'gallery.html', {'documents': documents,
+                                            'guid_id': guid_id})

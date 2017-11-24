@@ -5,11 +5,67 @@
         <title>Pointillizer!</title>
     </head>
     <meta name="viewport" content="width=device-width">
-    <body>
+    <style>
 
+        .main {
+            font-family: "Arial", Sans-serif;
+            text-align: center
+        }
+        .title {
+            background-color: lightgrey;
+            padding: 5px;
+            border-radius: 6px;
+        }
+        label[for="id_docfile"]{
+            background-color: grey;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            padding: 6px;
+            border-radius:6px;
+            color: #fff;
+            font-family: "Arial", Sans-serif;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            border:none;
+        }
+        label[for="id_docfile"]:hover{
+            border: none;
+            background:lightgrey;
+            box-shadow: 0px 0px 1px #777;
+        }
+        input[type="file"]{
+            display: none;
+        }
+        #submit {
+            background-color: grey;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            padding: 6px;
+            border-radius:6px;
+            color: #fff;
+            font-family: "Arial", Sans-serif;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            border:none;
+        }
+
+        #submit:hover {
+            border: none;
+            background:lightgrey;
+            box-shadow: 0px 0px 1px #777;
+        }
+
+    </style>
+    <body>
+    <div class="main">
+        <div class="title">
         <h1>Pointillizer!</h1>
-        <p>Info <a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">here</a>.
-           Gallery <a href={% url 'gallery' %}>here</a>.
+        <p><a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">Info</a>
+        &nbsp; &nbsp; &nbsp;
+        <a href={% url 'gallery' guid_id=guid_id %}>Gallery</a></p>
+        </div>
 
         <h2>Upload an image:</h2>
         <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data">
@@ -23,24 +79,25 @@
                 {{ form.docfile }}
             </p>
 
-            <p><input type="submit" value="Upload"/></p>
+            <p><input type="submit" name="submit" value="Upload" id="submit" />
+
         </form>
 
         <!-- List of uploaded images -->
-        <h2>Images (User {{ guid_id }}):</h2>
+        <h2>Your Images:</h2>
+        <!--(User {{ guid_id }})-->
         {% load thumbnail %}
         {% if documents %}
                 {% for document in documents %}
-                    <a href="{{ document.docfile.url }}">
-                        {% thumbnail document.docfile.url "300x300" crop="center" as im %}
-                        <img src="{{ im.url }}">
-                        {% endthumbnail %}
-                    </a><br>
+                    {% thumbnail document.docfile.url "300x300" crop="center" as im %}
+                    <a href="{{ document.docfile.url }}"><img src="{{ im.url }}"></a>
+                    {% endthumbnail %}
+                    <br>
                 {% endfor %}
         {% else %}
             <p>No images yet, upload one!</p>
         {% endif %}
-
+    </div>
     </body>
 
 </html>
