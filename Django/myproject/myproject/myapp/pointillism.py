@@ -42,23 +42,6 @@ class pointillize:
             self.image = image
             self.filename = ['none']
 
-        # Fix orientation if image is rotated
-        if hasattr(self.image, '_getexif'):  # only present in JPEGs
-            for orientation in ExifTags.TAGS.keys():
-                if ExifTags.TAGS[orientation] == 'Orientation':
-                    break
-            e = self.image._getexif()       # returns None if no EXIF data
-            if e is not None:
-                exif = dict(e.items())
-                orientation = exif[orientation]
-
-                if orientation == 3:
-                    self.image = self.image.transpose(Image.ROTATE_180)
-                elif orientation == 6:
-                    self.image = self.image.transpose(Image.ROTATE_270)
-                elif orientation == 8:
-                    self.image = self.image.transpose(Image.ROTATE_90)
-
         # Make array and blank canvas with borders
         self._build_array()
         self.border = kwargs.get('border', 100)
