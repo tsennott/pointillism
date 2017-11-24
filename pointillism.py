@@ -5,14 +5,13 @@ This module contains classes that help create pointillized images.
 """
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ExifTags
 import imageio
 from IPython.display import display
 from random import random
 import os
 import time
 import inspect
-
 
 # Base class definitions, handles files and image manipulations
 
@@ -39,17 +38,33 @@ class pointillize:
                 raise ValueError('Must pass image or location')
             self.filename = location
             self.image = Image.open(self.filename)
-            self._build_arrays()
         else:
             self.image = image
             self.filename = ['none']
-            self._build_arrays()
 
-        # Make blank canvases with borders
+        # Fix orientation if image is rotated
+        if hasattr(self.image, '_getexif'):  # only present in JPEGs
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    break
+            e = self.image._getexif()       # returns None if no EXIF data
+            if e is not None:
+                exif = dict(e.items())
+                orientation = exif[orientation]
+
+                if orientation == 3:
+                    self.image = self.image.transpose(Image.ROTATE_180)
+                elif orientation == 6:
+                    self.image = self.image.transpose(Image.ROTATE_270)
+                elif orientation == 8:
+                    self.image = self.image.transpose(Image.ROTATE_90)
+
+        # Make array and blank canvas with borders
+        self._build_array()
         self.border = kwargs.get('border', 100)
         self._newImage(self.border)
 
-    def _build_arrays(self):
+    def _build_array(self):
         """Builds np arrays of self.images"""
 
         self.params['reduce_factor'] = min(self.params['reduce_factor'],
@@ -91,7 +106,7 @@ class pointillize:
         if resize:
             self.image = self.image.resize([aspect[0], aspect[1]])
 
-        self._build_arrays()
+        self._build_array()
         self._newImage(self.border)
 
     def display(self, **kwargs):
