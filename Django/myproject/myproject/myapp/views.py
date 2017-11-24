@@ -21,10 +21,11 @@ def new_guid(request):
     user.name = 'New User'
     user.save()
     # request.session['guid_id'] = user.pk
-    return HttpResponseRedirect(reverse('upload',
+    return HttpResponseRedirect(reverse('gallery',
                                         kwargs={'guid_id': user.pk}))
 
 
+@csrf_exempt
 def upload(request, guid_id):
 
     user = get_object_or_404(User, pk=guid_id)

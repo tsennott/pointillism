@@ -13,60 +13,36 @@
             } 
             //--> 
         </script>
-        <script>
-            function validateForm() {
-            var x = document.forms["form"]["file"];
-            if (x == ) {
-                alert("Name must be filled out");
-                return false;
-            }
-            }
-        </script>
     </head>
     <meta name="viewport" content="width=device-width">
     <style>
 
         .main {
             font-family: "Arial", Sans-serif;
-            text-align: center
+            text-align: center;
         }
+
         .title {
             background-color: lightgrey;
             padding: 5px;
             border-radius: 6px;
+            max-width: 400px;
+            margin: 0 auto;
         }
-        label[for="id_docfile"]{
+
+        #button {
             background-color: grey;
             padding: 6px;
             border-radius:6px;
-            color: #fff;
+            /*color: #fff;*/
             font-family: "Arial", Sans-serif;
-            font-size: 16px;
-            text-decoration: none;
-            cursor: pointer;
-            border:none;
-        }
-        label[for="id_docfile"]:hover{
-            border: none;
-            background:lightgrey;
-            box-shadow: 0px 0px 1px #777;
-        }
-        input[type="file"]{
-            display: none;
-        }
-        #submit {
-            background-color: grey;
-            padding: 6px;
-            border-radius:6px;
-            color: #fff;
-            font-family: "Arial", Sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             text-decoration: none;
             cursor: pointer;
             border:none;
         }
 
-        #submit:hover {
+        #button:hover {
             border: none;
             background:lightgrey;
             box-shadow: 0px 0px 1px #777;
@@ -83,19 +59,10 @@
         </div>
 
         <h2>Upload an image:</h2>
-        <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form" 
-        onsubmit="return validateForm()">
-            {% csrf_token %}
-            <p>{{ form.non_field_errors }}</p>
+        <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form">
 
-            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-
-            <p>
-                {{ form.docfile.errors }}
-                {{ form.docfile }}
-            </p>
-
-            <p><input type="submit" name="submit" value="Upload" id="submit"
+            <p><input type="file" name="docfile" id="button" style="width: 200px" />
+            <p><input type="submit" name="submit" value="Upload" id="button"
                 onclick='showHide()'></p>
         </form>
             <div id="searchingimageDiv" style="display:none">
