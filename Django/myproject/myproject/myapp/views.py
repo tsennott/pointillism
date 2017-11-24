@@ -4,6 +4,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 
+from django.views.decorators.csrf import csrf_exempt
+
 from myproject.myapp.models import Document
 from myproject.myapp.models import User
 from myproject.myapp.forms import DocumentForm

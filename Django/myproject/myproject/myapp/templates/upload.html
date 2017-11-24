@@ -3,6 +3,25 @@
     <head>
         <meta charset="utf-8">
         <title>Pointillizer!</title>
+        <script type="text/javascript"> 
+            <!-- 
+            function showHide(){ 
+            //create an object reference to the div containing images 
+            var oimageDiv=document.getElementById('searchingimageDiv') 
+            //set display to inline if currently none, otherwise to none 
+            oimageDiv.style.display=(oimageDiv.style.display=='none')?'inline':'none' 
+            } 
+            //--> 
+        </script>
+        <script>
+            function validateForm() {
+            var x = document.forms["form"]["file"];
+            if (x == ) {
+                alert("Name must be filled out");
+                return false;
+            }
+            }
+        </script>
     </head>
     <meta name="viewport" content="width=device-width">
     <style>
@@ -18,8 +37,6 @@
         }
         label[for="id_docfile"]{
             background-color: grey;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;
             padding: 6px;
             border-radius:6px;
             color: #fff;
@@ -39,8 +56,6 @@
         }
         #submit {
             background-color: grey;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;
             padding: 6px;
             border-radius:6px;
             color: #fff;
@@ -68,7 +83,8 @@
         </div>
 
         <h2>Upload an image:</h2>
-        <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data">
+        <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form" 
+        onsubmit="return validateForm()">
             {% csrf_token %}
             <p>{{ form.non_field_errors }}</p>
 
@@ -79,10 +95,12 @@
                 {{ form.docfile }}
             </p>
 
-            <p><input type="submit" name="submit" value="Upload" id="submit" />
-
+            <p><input type="submit" name="submit" value="Upload" id="submit"
+                onclick='showHide()'></p>
         </form>
-
+            <div id="searchingimageDiv" style="display:none">
+                Loading, please wait...
+            </div>
         <!-- List of uploaded images -->
         <h2>Your Images:</h2>
         <!--(User {{ guid_id }})-->
