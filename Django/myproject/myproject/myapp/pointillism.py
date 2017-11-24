@@ -42,6 +42,23 @@ class pointillize:
             self.image = image
             self.filename = ['none']
 
+        # Fix orientation if image is rotated
+        if hasattr(self.image, '_getexif'):  # only present in JPEGs
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    break
+            e = self.image._getexif()       # returns None if no EXIF data
+            if e is not None:
+                exif = dict(e.items())
+                if orientation in exif:
+                    orientation = exif[orientation]
+                    if orientation == 3:
+                        self.image = self.image.transpose(Image.ROTATE_180)
+                    elif orientation == 6:
+                        self.image = self.image.transpose(Image.ROTATE_270)
+                    elif orientation == 8:
+                        self.image = self.image.transpose(Image.ROTATE_90)
+
         # Make array and blank canvas with borders
         self._build_array()
         self.border = kwargs.get('border', 100)
@@ -50,8 +67,9 @@ class pointillize:
     def _build_array(self):
         """Builds np arrays of self.images"""
 
-        self.params['reduce_factor'] = min(self.params['reduce_factor'],
-                                           self.image.size[0] / 1000)
+        d = (self.image.size[0]**2 + self.image.size[1]**2)**0.5
+        self.params['reduce_factor'] = max(min(self.params['reduce_factor'],
+                                           d / 1000), 1)
         w = int(self.image.size[0]/self.params['reduce_factor'])
         h = int(self.image.size[1]/self.params['reduce_factor'])
         resized = self.image.resize([w, h])
@@ -99,8 +117,9 @@ class pointillize:
         original = kwargs.get('original', False)
         image = self.image if original else self.out
         print(self.filename)
+        ratio = 1000/(image.size[0]**2 + image.size[1]**2)**0.5
         display(image.resize(
-                [1000, image.size[1] * 1000 // image.size[0]]))
+                [int(image.size[0] * ratio), int(image.size[1] * ratio)]))
 
     def _getColorOfPixel(self, loc, r):
         """Returns RGB tuple [0,255] of average color of the np array
@@ -140,7 +159,7 @@ class pointillize:
 
     def plotRecPoints(self, n, multiplier, fill):
         """Plots symmetrical array of points over an image array,
-        where n is the number of points across the horizontal,
+        where n is the number of points across the diagonal,
         and multiplier is the ratio of the radius to the step
         and if fill is True, fills frame, otherwise leaves border"""
 
@@ -154,7 +173,7 @@ class pointillize:
         array = self.array
         h = array.shape[0]*self.params['reduce_factor']
         w = array.shape[1]*self.params['reduce_factor']
-        step = w/n
+        step = (w**2 + h**2)**0.5/n
         r = step*multiplier
         if fill:
             for x in [int(x) for x in np.linspace(0, w, w // step)]:
@@ -197,7 +216,7 @@ class pointillize:
 
     def plotRandomPointsComplexity(self, n, constant, power):
         """plots random points over image, where constant is
-        the portion of the width for the max size of the bubble,
+        the portion of the diagonal for the max size of the bubble,
         and power pushes the distribution towards smaller bubbles"""
 
         frame_is_top = (inspect.currentframe().
@@ -209,12 +228,13 @@ class pointillize:
 
         h = self.array.shape[0]*self.params['reduce_factor']
         w = self.array.shape[1]*self.params['reduce_factor']
+        d = (h**2 + w**2)**0.5
         for j in range(0, int(n)):
             loc = [int(random() * w), int(random() * h)]
             complexity = self._getComplexityOfPixel(
-                self.array, loc, int(w * constant / 2))
+                self.array, loc, int(d * constant / 2))
             r = np.ceil((complexity / 2)**(power) *
-                        w * constant * 2**power + w/1000)
+                        d * constant * 2**power + d/1000)
             self._plotColorPoint(loc, r)
 
         end = time.time()
@@ -382,6 +402,7 @@ class pointillizePile(pointillizeStack):
 
         self.outputs_store = []
         self.inputs_store = []
+        self.filenames_store = []
         self._kwargs = kwargs
         self._args = args
         self._init_pointilize(index=0)
@@ -400,9 +421,10 @@ class pointillizePile(pointillizeStack):
         original = kwargs.get('original', False)
         for i in range(len(self.inputs_store)):
             image = self.inputs_store[i] if original else self.outputs_store[i]
-            print(self.filename)
+            print(self.filenames_store[i])
+            ratio = 500/(image.size[0]**2 + image.size[1]**2)**0.5
             display(image.resize(
-                    [1000, image.size[1] * 1000 // image.size[0]]))
+                    [int(image.size[0] * ratio), int(image.size[1] * ratio)]))
 
     def run_pile_images(self, location, **kwargs):
         """Process and save files to location"""
@@ -413,6 +435,7 @@ class pointillizePile(pointillizeStack):
             self._init_pointilize(i)
             self.run_queue()
             self.save_out(location, **kwargs)
+            self.filenames_store.append(self.filename)
             self.inputs_store.append(self.image)
             self.outputs_store.append(self.out)
         print('done')
