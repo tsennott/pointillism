@@ -40,8 +40,8 @@ def upload(request, guid_id):
             point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             new_stringIO = io.BytesIO()
             point.out.convert('RGB').save(new_stringIO,
-                                              orig_file.content_type.split('/')
-                                              [-1].upper())
+                                          orig_file.content_type.split('/')
+                                          [-1].upper())
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
@@ -61,7 +61,7 @@ def upload(request, guid_id):
         form = DocumentForm()  # A empty, unbound form
 
     # Load documents for the upload page
-    all_documents = user.document_set.all()
+    all_documents = user.document_set.order_by("-id")
     documents = []
     for document in all_documents:
             if document.docfile.name[-16:] == 'pointillized.jpg':
