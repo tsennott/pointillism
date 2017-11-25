@@ -22,7 +22,7 @@
         }
         .body {
             display: block;
-            width: 80%;
+            width: 90%;
             height: auto;
             padding: 5px;
             max-width: 375px;
@@ -34,19 +34,23 @@
         <!-- Title section -->
         <div class="title">
         <h1>Pointillizer!</h1>
-        <p><a href ={% url "gallery" guid_id=guid_id %}>Gallery</a> 
-            &nbsp; 
-        <a href={% url "upload" guid_id=guid_id %}>Upload</a></p>
+        <p>
+        <a href={% url "info" guid_id=guid_id %}>Info</a>
+        &nbsp; &nbsp; &nbsp;
+        <a href={% url "gallery" guid_id=guid_id %}>Gallery</a>
+        &nbsp; &nbsp;
+        <a href={% url 'upload' guid_id=guid_id %}>Upload</a>
+        </p>
         </div>
 
         <!-- Info section -->
         <div class="body">
         <h2>Info on pointillizer:</h2>
-        <p> Works best on full-sized images. Landscapes or other images without too much complexity are ideal.</p>
+        <p> Works best on full-sized images. Landscapes or simple images are ideal.</p>
         <p><a href="https://photos.app.goo.gl/Dv6IObEJnsxKI3bn1">Examples</a>, including gifs</p> 
         <p> Image manipulation built from scrath in Python with Pillow, site deployed using Django on AWS Elastic Beanstalk.</p>
         <p> Images in gallery were uploaded by users or myself and are copyright their original owners</p>
-
+        <p> Check out experimental feature for building gifs <a href={% url 'gif' guid_id=guid_id %}>here</a>, a little slow currently.
          <!-- Contacts and links  -->
             <p><a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">github</a><br>
             <script type="text/javascript">

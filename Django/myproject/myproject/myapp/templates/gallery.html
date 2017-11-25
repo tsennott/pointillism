@@ -24,9 +24,13 @@
         <!-- Title section -->
         <div class="title">
         <h1>Pointillizer!</h1>
-        <p><a href={% url "info" guid_id=guid_id %}>Info</a>
+        <p>
+        <a href={% url "info" guid_id=guid_id %}>Info</a>
         &nbsp; &nbsp; &nbsp;
-        <a href={% url "upload" guid_id=guid_id %}>Upload</a></p>
+        <a href={% url "gallery" guid_id=guid_id %}>Gallery</a>
+        &nbsp; &nbsp;
+        <a href={% url 'upload' guid_id=guid_id %}>Upload</a>
+        </p>
         </div>
 
         <!-- Gallery section -->
