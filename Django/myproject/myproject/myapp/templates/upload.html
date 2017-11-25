@@ -5,12 +5,14 @@
         <title>Pointillizer!</title>
 
         <script type="text/javascript"> 
-            function showHide(){ 
-            //create an object reference to the div containing images 
-            var oimageDiv=document.getElementById('loadingimage') 
-            //set display to inline if currently none, otherwise to none 
-            oimageDiv.style.display=(oimageDiv.style.display=='none')?'inline':'none' 
-            } 
+            function showHide() {
+                var x = document.getElementById("loadingimage");
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
         </script>
 
     </head>
@@ -43,11 +45,6 @@
             border:none;
         }
 
-        #button:hover {
-            /*background:lightgrey;
-            box-shadow: 0px 0px 1px #777;*/
-        }
-
     </style>
     <body>
     <div class="main">
@@ -59,7 +56,7 @@
         &nbsp; &nbsp; &nbsp;
         <a href={% url "gallery" guid_id=guid_id %}>Gallery</a>
         &nbsp; &nbsp;
-        <a href={% url 'upload' guid_id=guid_id %}>Upload</a>
+        <a href={% url 'upload' guid_id=guid_id %}>Try it!</a>
         </p>
         </div>
 
@@ -68,8 +65,7 @@
         <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form">
 
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
-            <p><input type="submit" name="submit" value="Upload" id="button"
-                onclick='javascript:showHide()'></p>
+            <p><input type="submit" value="Upload" id="button" onclick='showHide()'></p>
         </form>
             <div id="loadingimage" style="display:none">
                 Loading, please wait...
