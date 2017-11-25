@@ -14,35 +14,62 @@
                 }
             }
         </script>
-
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     </head>
     <meta name="viewport" content="width=device-width">
     <style>
 
         .main {
-            font-family: "Arial", Sans-serif;
+            font-family: 'Lato', sans-serif;
             text-align: center;
         }
 
         .title {
-            background-color: lightgrey;
+            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/IMG_1261.jpg - no border copy.png');
             padding: 5px;
             border-radius: 6px;
-            max-width: 400px;
+            height: 108px;
+            max-width: 388px;
             margin: 0 auto;
+        }
+        .title a:link {
+            color: #000000;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .title a:visited {
+            color: #000000;
+            text-decoration: none;
+        }
+        .title a:hover {
+            color: #FFFFFF;
+            text-decoration: none;
         }
 
         #button {
-            background-color: lightgrey;
+            background-color: #ffcc99;
             padding: 6px;
             border-radius:6px;
             /*color: #fff;*/
             -webkit-appearance: none;
-            font-family: "Arial", Sans-serif;
             font-size: 14px;
             text-decoration: none;
             cursor: pointer;
             border:none;
+        }
+
+        #button:hover {
+            /*background:lightgrey;
+            box-shadow: 0px 0px 1px #777;*/
+        }
+
+        .images {
+            display: block;
+            width: 80%;
+            height: auto;
+            padding: 5px;
+            max-width: 375px;
+            margin: 0 auto;
         }
 
     </style>
