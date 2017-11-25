@@ -106,7 +106,7 @@ def gif(request, guid_id):
             orig_image = Image.open(orig_file)
             point = pointillizeStack(image=orig_image, reduce_factor=2,
                                      border=0, queue=True)
-            point.crop_Y([1920, 1080], resize=True)
+            point.resize(0.5, 2200)
             point.plotRecPoints(n=40, multiplier=1, fill=True)
             point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             multipliers = [5, 4.5, 4, 3.5, 3, 2.6, 2.3, 2, 1.75,

@@ -110,6 +110,20 @@ class pointillize:
         self._build_array()
         self._newImage(self.border)
 
+    def resize(self, ratio, min_size):
+        """Resizes by ratio, or to min diagonal size in pixels"""
+
+        w = self.image.size[0]
+        h = self.image.size[1]
+        d = (h**2 + w**2)**0.5
+        ratio = max(ratio, min_size / d)
+
+        self.image = self.image.resize([int(w * ratio),
+                                       int(h * ratio)])
+
+        self._build_array()
+        self._newImage(self.border)
+
     def display(self, **kwargs):
         """Displays browser-size version of outputs, or original images
         if original=True"""
