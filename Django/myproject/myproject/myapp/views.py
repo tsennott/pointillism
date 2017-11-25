@@ -111,15 +111,11 @@ def gif(request, guid_id):
             point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             multipliers = [5, 4.5, 4, 3.5, 3, 2.6, 2.3, 2, 1.75,
                            1.5, 1.25, 1.1, 1, 1]
-            multipliers += multipliers[::-1]
-            point.build_multipliers(multipliers)
-            point.save_gif('temp/' + guid_id + '_pointqueue.gif', 0.1)
-            new_stringIO = io.BytesIO()
-            with open('temp/' + guid_id + '_pointqueue.gif', "rb") as imageFile:
-                f = imageFile.read()
-                b = bytearray(f)
-            new_stringIO.write(b)
-            new_file = InMemoryUploadedFile(new_stringIO,
+            point.build_multipliers(multipliers, reverse=True)
+            # point.save_gif('temp/' + guid_id + '_pointqueue.gif', 0.1)
+            new_gif_IO = io.BytesIO()
+            point.save_gif(new_gif_IO, 0.1)
+            new_file = InMemoryUploadedFile(new_gif_IO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
                                              ' pointillized.gif'),
@@ -130,8 +126,8 @@ def gif(request, guid_id):
             newdoc.save()
             origdoc = user.document_set.create(docfile=orig_file)
             origdoc.save()
-            os.remove('temp/' + guid_id + '_pointqueue.gif')
-            
+            # os.remove('temp/' + guid_id + '_pointqueue.gif')
+
             # Redirect to the document upload page after POST
             return HttpResponseRedirect(reverse('gif',
                                                 kwargs={'guid_id': user.pk}))
