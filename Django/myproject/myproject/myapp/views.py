@@ -114,7 +114,7 @@ def gif(request, guid_id):
             point.build_multipliers(multipliers, reverse=True)
             # point.save_gif('temp/' + guid_id + '_pointqueue.gif', 0.1)
             new_gif_IO = io.BytesIO()
-            point.save_gif(new_gif_IO, 0.1)
+            point.save_gif(new_gif_IO, 0.2)
             new_file = InMemoryUploadedFile(new_gif_IO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
