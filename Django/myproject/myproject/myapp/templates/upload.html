@@ -51,6 +51,7 @@
     </style>
     <body>
     <div class="main">
+        <!-- Title section -->
         <div class="title">
         <h1>Pointillizer!</h1>
         <p><a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">Info</a>
@@ -58,6 +59,7 @@
         <a href={% url 'gallery' guid_id=guid_id %}>Gallery</a></p>
         </div>
 
+        <!-- Image upload section-->
         <h2>Upload an image:</h2>
         <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form">
 
