@@ -3,16 +3,16 @@
     <head>
         <meta charset="utf-8">
         <title>Pointillizer!</title>
+
         <script type="text/javascript"> 
-            <!-- 
             function showHide(){ 
             //create an object reference to the div containing images 
-            var oimageDiv=document.getElementById('searchingimageDiv') 
+            var oimageDiv=document.getElementById('loadingimage') 
             //set display to inline if currently none, otherwise to none 
             oimageDiv.style.display=(oimageDiv.style.display=='none')?'inline':'none' 
             } 
-            //--> 
         </script>
+
     </head>
     <meta name="viewport" content="width=device-width">
     <style>
@@ -63,11 +63,12 @@
 
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
             <p><input type="submit" name="submit" value="Upload" id="button"
-                onclick='showHide()'></p>
+                onclick='javascript:showHide()'></p>
         </form>
-            <div id="searchingimageDiv" style="display:none">
+            <div id="loadingimage" style="display:none">
                 Loading, please wait...
             </div>
+
         <!-- List of uploaded images -->
         <h2>Your Images:</h2>
         <!--(User {{ guid_id }})-->
