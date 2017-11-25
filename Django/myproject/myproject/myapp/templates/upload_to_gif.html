@@ -48,6 +48,15 @@
             box-shadow: 0px 0px 1px #777;*/
         }
 
+        .images {
+            display: block;
+            width: 80%;
+            height: auto;
+            padding: 5px;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+
     </style>
     <body>
     <div class="main">
@@ -74,17 +83,18 @@
         <!-- List of uploaded images -->
         <h2>Your Images:</h2>
         <!--(User {{ guid_id }})-->
-        {% load thumbnail %}
+        <div class="images">{% load thumbnail %}
         {% if documents %}
                 {% for document in documents %}
                     {% thumbnail document.docfile.url "300x300" crop="center" as im %}
-                    <a href="{{ document.docfile.url }}"><img src="{{ document.docfile.url }}" width="25%"></a>
+                    <a href="{{ document.docfile.url }}"><img src="{{ document.docfile.url }}" width="100%"></a>
                     {% endthumbnail %}
                     <br>
                 {% endfor %}
         {% else %}
             <p>No images yet, upload one!</p>
         {% endif %}
+        </div>
     </div>
     </body>
 

@@ -12,7 +12,7 @@ from myproject.myapp.forms import DocumentForm
 
 from myproject.myapp.pointillism import pointillize, pointillizeStack
 from PIL import Image
-import imageio
+import os
 
 import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -130,7 +130,8 @@ def gif(request, guid_id):
             newdoc.save()
             origdoc = user.document_set.create(docfile=orig_file)
             origdoc.save()
-
+            os.remove('temp/' + guid_id + '_pointqueue.gif')
+            
             # Redirect to the document upload page after POST
             return HttpResponseRedirect(reverse('gif',
                                                 kwargs={'guid_id': user.pk}))
