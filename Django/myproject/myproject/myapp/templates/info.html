@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Pointillizer!</title>
+
+
+    </head>
+    <meta name="viewport" content="width=device-width">
+    <style>
+
+        .main {
+            font-family: "Arial", Sans-serif;
+            text-align: center;
+        }
+        .title {
+            background-color: lightgrey;
+            padding: 5px;
+            border-radius: 6px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .body {
+            display: block;
+            width: 80%;
+            height: auto;
+            padding: 5px;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+    </style>
+    <body>
+    <div class="main">
+        <!-- Title section -->
+        <div class="title">
+        <h1>Pointillizer!</h1>
+        <p><a href ={% url "gallery" guid_id=guid_id %}>Gallery</a> 
+            &nbsp; 
+        <a href={% url "upload" guid_id=guid_id %}>Upload</a></p>
+        </div>
+
+        <!-- Info section -->
+        <div class="body">
+        <h2>Info on pointillizer:</h2>
+        <p> Works best on full-sized images. Landscapes or other images without too much complexity are ideal.</p>
+        <p> Image manipulation built from scrath in Python with Pillow, site deployed using Django on AWS Elastic Beanstalk.</p>
+        <p> Images in gallery were uploaded by users or myself and are copyright their original owners</p>
+
+         <!-- Contacts and links  -->
+            <p><a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">github</a><br>
+            <script type="text/javascript">
+            var first = "timothy.sennott";
+            var last = "gmail.com";
+            document.write('<a href="mailto:'+first + '@' + last+'">email<\/a>');
+        </script>
+        <noscript>
+            Please enable javascript to see my email
+        </noscript>
+        </div>
+    </div>
+    </body>
+
+</html>

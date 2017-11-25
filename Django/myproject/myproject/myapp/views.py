@@ -85,3 +85,8 @@ def gallery(request, guid_id):
 
     return render(request, 'gallery.html', {'documents': documents,
                                             'guid_id': guid_id})
+
+
+def info(request, guid_id):
+
+    return render(request, 'info.html', {'guid_id': guid_id})
