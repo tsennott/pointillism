@@ -7,4 +7,4 @@ Under active development.
 See example usage and images in `Pointillism Example Usage.ipynb` notebook, and google album [here](https://photos.app.goo.gl/Dv6IObEJnsxKI3bn1)
 
 ## Deployment
-Currently deployed via Django on AWS Elastic beanstalk [here](http://myproject.p5s78dnxbs.us-west-2.elasticbeanstalk.com/myapp)
+Currently deployed via Django on AWS Elastic beanstalk at [pointillizer.com](http://www.pointillizer.com)
