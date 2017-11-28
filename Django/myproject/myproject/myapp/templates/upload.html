@@ -86,9 +86,30 @@
                 opacity: 0;
             }
         }
+        @webkit-keyframes blink {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
         .image_title h2{
             margin-bottom: 5px;
             border-bottom: 0px;
+        }
+        .link_text {
+            font-size: 10pt; 
+            color: darkgrey;
+        }
+        .link_text a:link {
+            color: darkgrey;
+        }
+        .link_text a:visited {
+            color: darkgrey;
+        }
+        .link_text a:hover {
+            color: #000000;
         }
     </style>
     <body>
@@ -121,7 +142,7 @@
         <!--(User {{ guid_id }})-->
         {% load thumbnail %}
         {% if documents %}
-            <div style="font-size: 8pt"><em>Copy this <a href="{% url "upload" guid_id=guid_id %}">link</a> to return here later</em>
+            <div class="link_text"><em>Copy this <a href="{% url "upload" guid_id=guid_id %}">link</a> to return here later</em>
             </div><br>
                 {% for document in documents %}
                     {% thumbnail document.docfile.url "300x300" crop="center" as im %}
