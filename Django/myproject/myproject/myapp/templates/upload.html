@@ -33,16 +33,16 @@
             margin: 0 auto;
         }
         .title a:link {
-            color: #000000;
+            color: #FFFFFF;
             text-decoration: none;
             font-size: 18px;
         }
         .title a:visited {
-            color: #000000;
+            color: #FFFFFF;
             text-decoration: none;
         }
         .title a:hover {
-            color: #FFFFFF;
+            color: #000000;
             text-decoration: none;
         }
 
@@ -71,7 +71,25 @@
             max-width: 375px;
             margin: 0 auto;
         }
-
+        .blink {
+            animation-duration: 1s;
+            animation-name: blink;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+            animation-timing-function: ease-in-out;
+        }
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        .image_title h2{
+            margin-bottom: 5px;
+            border-bottom: 0px;
+        }
     </style>
     <body>
     <div class="main">
@@ -94,15 +112,17 @@
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
             <p><input type="submit" value="Upload" id="button" onclick='showHide()'></p>
         </form>
-            <div id="loadingimage" style="display:none">
+            <div id="loadingimage" class="blink" style="display:none;">
                 Loading, please wait...
             </div>
 
         <!-- List of uploaded images -->
-        <h2>Your Images:</h2>
+        <div class="image_title"><h2>Your Images:</h2></div>
         <!--(User {{ guid_id }})-->
         {% load thumbnail %}
         {% if documents %}
+            <div style="font-size: 8pt"><em>Copy this <a href="{% url "upload" guid_id=guid_id %}">link</a> to return here later</em>
+            </div><br>
                 {% for document in documents %}
                     {% thumbnail document.docfile.url "300x300" crop="center" as im %}
                     <a href="{{ document.docfile.url }}"><img src="{{ im.url }}"></a>
