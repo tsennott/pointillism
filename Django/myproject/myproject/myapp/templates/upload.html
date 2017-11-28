@@ -14,37 +14,103 @@
                 }
             }
         </script>
-
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     </head>
     <meta name="viewport" content="width=device-width">
     <style>
 
         .main {
-            font-family: "Arial", Sans-serif;
+            font-family: 'Lato', sans-serif;
             text-align: center;
         }
 
         .title {
-            background-color: lightgrey;
+            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/IMG_1261.jpg - no border copy.png');
             padding: 5px;
             border-radius: 6px;
-            max-width: 400px;
+            height: 108px;
+            max-width: 388px;
             margin: 0 auto;
+        }
+        .title a:link {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .title a:visited {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+        .title a:hover {
+            color: #000000;
+            text-decoration: none;
         }
 
         #button {
-            background-color: lightgrey;
+            background-color: #ffcc99;
             padding: 6px;
             border-radius:6px;
             /*color: #fff;*/
             -webkit-appearance: none;
-            font-family: "Arial", Sans-serif;
             font-size: 14px;
             text-decoration: none;
             cursor: pointer;
             border:none;
         }
 
+        #button:hover {
+            /*background:lightgrey;
+            box-shadow: 0px 0px 1px #777;*/
+        }
+
+        .images {
+            display: block;
+            width: 80%;
+            height: auto;
+            padding: 5px;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .blink {
+            animation-duration: 1s;
+            animation-name: blink;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+            animation-timing-function: ease-in-out;
+        }
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        @webkit-keyframes blink {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        .image_title h2{
+            margin-bottom: 5px;
+            border-bottom: 0px;
+        }
+        .link_text {
+            font-size: 10pt; 
+            color: darkgrey;
+        }
+        .link_text a:link {
+            color: darkgrey;
+        }
+        .link_text a:visited {
+            color: darkgrey;
+        }
+        .link_text a:hover {
+            color: #000000;
+        }
     </style>
     <body>
     <div class="main">
@@ -67,15 +133,17 @@
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
             <p><input type="submit" value="Upload" id="button" onclick='showHide()'></p>
         </form>
-            <div id="loadingimage" style="display:none">
+            <div id="loadingimage" class="blink" style="display:none;">
                 Loading, please wait...
             </div>
 
         <!-- List of uploaded images -->
-        <h2>Your Images:</h2>
+        <div class="image_title"><h2>Your Images:</h2></div>
         <!--(User {{ guid_id }})-->
         {% load thumbnail %}
         {% if documents %}
+            <div class="link_text"><em>Copy this <a href="{% url "upload" guid_id=guid_id %}">link</a> to return here later</em>
+            </div><br>
                 {% for document in documents %}
                     {% thumbnail document.docfile.url "300x300" crop="center" as im %}
                     <a href="{{ document.docfile.url }}"><img src="{{ im.url }}"></a>
