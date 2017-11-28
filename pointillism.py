@@ -228,11 +228,22 @@ class pointillize:
             R, G, B = 0, 0, 0
         return 1 - (R + G + B) / (255 * 3.0)
 
-    def plotRandomPointsComplexity(self, n, constant, power):
+    def _generateRandomPoints(self, n):
+        h = self.array.shape[0]*self.params['reduce_factor']
+        w = self.array.shape[1]*self.params['reduce_factor']
+        locations = []
+        for i in range(0, int(n)):
+            locations.append([int(random() * w), int(random() * h)])
+        return locations
+
+    def plotRandomPointsComplexity(self, n, constant, power, **kwargs):
         """plots random points over image, where constant is
         the portion of the diagonal for the max size of the bubble,
         and power pushes the distribution towards smaller bubbles"""
 
+        locations = kwargs.get('locations', False)
+        if locations is not False:
+            n = len(locations)
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
         to_print = True if self.debug & frame_is_top else False
@@ -244,7 +255,10 @@ class pointillize:
         w = self.array.shape[1]*self.params['reduce_factor']
         d = (h**2 + w**2)**0.5
         for j in range(0, int(n)):
-            loc = [int(random() * w), int(random() * h)]
+            if locations is not False:
+                loc = locations[j]
+            else:
+                loc = [int(random() * w), int(random() * h)]
             complexity = self._getComplexityOfPixel(
                 self.array, loc, int(d * constant / 2))
             r = np.ceil((complexity / 2)**(power) *
