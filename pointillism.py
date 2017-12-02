@@ -26,6 +26,7 @@ class pointillize:
         self.debug = kwargs.get('debug', False)
         self.params = {}
         self.params['reduce_factor'] = kwargs.get('reduce_factor', 2)
+        self.params['increase_factor'] = kwargs.get('increase_factor', 2)
         self.point_queue = kwargs.get('queue', False)
         if self.point_queue:
             self._initQueue()
@@ -70,6 +71,8 @@ class pointillize:
         d = (self.image.size[0]**2 + self.image.size[1]**2)**0.5
         self.params['reduce_factor'] = max(min(self.params['reduce_factor'],
                                            d / 1000), 1)
+        self.params['net_factor'] = (self.params['reduce_factor'] *
+                                     self.params['increase_factor'])
         w = int(self.image.size[0]/self.params['reduce_factor'])
         h = int(self.image.size[1]/self.params['reduce_factor'])
         resized = self.image.resize([w, h])
@@ -78,8 +81,8 @@ class pointillize:
     def _newImage(self, border):
         """Creates new blank canvas with border"""
 
-        h = self.image.size[1]
-        w = self.image.size[0]
+        h = self.image.size[1] * self.params['increase_factor']
+        w = self.image.size[0] * self.params['increase_factor']
         self.out = Image.new(
                 'RGBA',
                 [w + (border * 2), h + (border * 2)],
@@ -140,9 +143,9 @@ class pointillize:
         of an image within a square of width 2r at location loc=[x,y]"""
 
         # Redefine location to array based on reduce factor
-        loc = [int(loc[0]/self.params['reduce_factor']),
-               int(loc[1]/self.params['reduce_factor'])]
-        r = int(r/self.params['reduce_factor'])
+        loc = [int(loc[0]/self.params['net_factor']),
+               int(loc[1]/self.params['net_factor'])]
+        r = int(r/self.params['net_factor'])
 
         left = int(max(loc[0] - r, 0))
         right = int(min(loc[0] + r, self.array.shape[1]))
@@ -184,9 +187,8 @@ class pointillize:
             print('plotRecPoints:', end=' ')
         start = time.time()
 
-        array = self.array
-        h = array.shape[0]*self.params['reduce_factor']
-        w = array.shape[1]*self.params['reduce_factor']
+        h = self.out.size[1]
+        w = self.out.size[0]
         step = (w**2 + h**2)**0.5/n
         r = step*multiplier
         if fill:
@@ -209,9 +211,9 @@ class pointillize:
     def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average complexity of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
-        loc = [int(loc[0]/self.params['reduce_factor']),
-               int(loc[1]/self.params['reduce_factor'])]
-        r = int(r/self.params['reduce_factor'])
+        loc = [int(loc[0]/self.params['net_factor']),
+               int(loc[1]/self.params['net_factor'])]
+        r = int(r/self.params['net_factor'])
 
         left = max(loc[0] - r, 0)
         right = min(loc[0] + r, array.shape[1])
@@ -229,8 +231,8 @@ class pointillize:
         return 1 - (R + G + B) / (255 * 3.0)
 
     def _generateRandomPoints(self, n):
-        h = self.array.shape[0]*self.params['reduce_factor']
-        w = self.array.shape[1]*self.params['reduce_factor']
+        h = self.out.size[1]
+        w = self.out.size[0]
         locations = []
         for i in range(0, int(n)):
             locations.append([int(random() * w), int(random() * h)])
@@ -251,8 +253,8 @@ class pointillize:
             print('plotRandomPointsComplexity:', end=' ')
         start = time.time()
 
-        h = self.array.shape[0]*self.params['reduce_factor']
-        w = self.array.shape[1]*self.params['reduce_factor']
+        h = self.out.size[1]
+        w = self.out.size[0]
         d = (h**2 + w**2)**0.5
         for j in range(0, int(n)):
             if locations is not False:
