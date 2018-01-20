@@ -81,9 +81,9 @@ class pointillize:
         h = self.image.size[1]
         w = self.image.size[0]
         self.out = Image.new(
-                'RGBA',
+                'RGB',
                 [w + (border * 2), h + (border * 2)],
-                (255, 255, 255, 0))
+                (255, 255, 255))
 
     def print_attributes(self):
         """Prints non-hidden object parameters"""
@@ -157,19 +157,25 @@ class pointillize:
         B = int(self.array[np.ix_(y, x, [2])].mean())
         return (R, G, B)
 
-    def _plotColorPoint(self, loc, r):
+    def _plotColorPoint(self, loc, r, **kwargs):
         """Plots point at loc with size r with average color from
         same in array"""
 
+        alpha = kwargs.get('alpha', 255)
         border = self.border
         color = self._getColorOfPixel(loc, r)
         if self.point_queue:
             self._queueColorPoint(loc, r, color)
         else:
-            draw = ImageDraw.Draw(self.out)
+            # Hacking together transparency here for now
+            # TODO handle more generally
+            new_layer = Image.new('RGBA', self.out.size, (0, 0, 0, 0))
+
+            draw = ImageDraw.Draw(new_layer)
             draw.ellipse((border + loc[0] - r, (border + loc[1] - r),
                           border + loc[0] + r, (border + loc[1] + r)),
-                         color + (255,))
+                         color + (alpha,),)
+            self.out.paste(new_layer, (0, 0), new_layer)
 
     def plotRecPoints(self, n, multiplier, fill):
         """Plots symmetrical array of points over an image array,
@@ -228,11 +234,12 @@ class pointillize:
             R, G, B = 0, 0, 0
         return 1 - (R + G + B) / (255 * 3.0)
 
-    def plotRandomPointsComplexity(self, n, constant, power):
+    def plotRandomPointsComplexity(self, n, constant, power, **kwargs):
         """plots random points over image, where constant is
         the portion of the diagonal for the max size of the bubble,
         and power pushes the distribution towards smaller bubbles"""
 
+        alpha = kwargs.get('alpha', 255)
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
         to_print = True if self.debug & frame_is_top else False
@@ -249,7 +256,7 @@ class pointillize:
                 self.array, loc, int(d * constant / 2))
             r = np.ceil((complexity / 2)**(power) *
                         d * constant * 2**power + d/1000)
-            self._plotColorPoint(loc, r)
+            self._plotColorPoint(loc, r, alpha=alpha)
 
         end = time.time()
         if to_print:
