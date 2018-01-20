@@ -169,13 +169,14 @@ class pointillize:
         else:
             # Hacking together transparency here for now
             # TODO handle more generally
-            new_layer = Image.new('RGBA', self.out.size, (0, 0, 0, 0))
+            new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
 
             draw = ImageDraw.Draw(new_layer)
-            draw.ellipse((border + loc[0] - r, (border + loc[1] - r),
-                          border + loc[0] + r, (border + loc[1] + r)),
+            draw.ellipse((0, 0, 2*r, 2*r),
                          color + (alpha,),)
-            self.out.paste(new_layer, (0, 0), new_layer)
+            self.out.paste(new_layer, (border + loc[0] - int(r),
+                                       border + loc[1] - int(r)),
+                           new_layer)
 
     def plotRecPoints(self, n, multiplier, fill):
         """Plots symmetrical array of points over an image array,
