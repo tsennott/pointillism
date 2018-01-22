@@ -173,7 +173,7 @@ class pointillize:
 
             draw = ImageDraw.Draw(new_layer)
             draw.ellipse((0, 0, 2*r, 2*r),
-                         color + (alpha,),)
+                         color + (int((random() * 0.5)**3 * 255 * 2**3),),)
             self.out.paste(new_layer, (border + loc[0] - int(r),
                                        border + loc[1] - int(r)),
                            new_layer)
@@ -344,14 +344,14 @@ class pointillizeStack(pointillize):
                 self.image_stack = []
 
         for i, method in enumerate(self.queue['methods']):
-            args = self.queue['args'][i]
+            in_kwargs = self.queue['args'][i]
             n = self.queue['repeats'][i]
 
             if to_print:
                 print(method.__name__ + ':', end=' ')
 
             for i in range(0, n):
-                method(*args)
+                method(**in_kwargs)
                 if save_steps:
                     self.image_stack.append(self.out.copy())
                 if to_print:
