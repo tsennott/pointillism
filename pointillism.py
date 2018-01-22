@@ -288,7 +288,7 @@ class pointillize:
                           border + loc[0] + r, (border + loc[1] + r)),
                          color + (255,))
 
-    def _makeComplexityMask(self, constant):
+    def _makeProbabilityMask(self, constant, power):
         """Makes a mask of image complexity for improving
         distribution of dots to where they are needed"""
         h = self.array.shape[0]*self.params['reduce_factor']
@@ -299,13 +299,17 @@ class pointillize:
         w_mask = int(d_mask/d * w)
 
         # TODO probably a faster way to compute this
-        self.complexityMask = np.empty([h_mask,w_mask])
+        self.probabilityMask = np.empty([h_mask,w_mask])
         for i in range(0, h_mask):
             for j in range(0, w_mask):
-                self.complexityMask[i,j] = self._getComplexityOfPixel(self.array, 
-                                                                      [int(j*w/w_mask),
-                                                                      int(i*h/h_mask)],
-                                                                      int(constant*d))
+                complexity = self._getComplexityOfPixel(self.array, 
+                                                        [int(j*w/w_mask),
+                                                        int(i*h/h_mask)],
+                                                        int(constant*d))
+                radius = self._getRadiusFromComplexity(d, power, constant, complexity)
+                area_ratio = radius**2 / (constant*d)**2
+                self.probabilityMask[i,j] =  1/area_ratio
+        self.probabilityMask /= self.probabilityMask.max()
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
