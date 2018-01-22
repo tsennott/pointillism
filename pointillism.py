@@ -235,6 +235,11 @@ class pointillize:
             R, G, B = 0, 0, 0
         return 1 - (R + G + B) / (255 * 3.0)
 
+    def _getRadiusFromComplexity(self, d, power, constant, complexity):
+        """Returns radius based on complexity calculation"""
+        return np.ceil((complexity / 2)**(power) *
+                        d * constant * 2**power + d/1000)
+
     def plotRandomPointsComplexity(self, n, constant, power, **kwargs):
         """plots random points over image, where constant is
         the portion of the diagonal for the max size of the bubble,
@@ -255,8 +260,7 @@ class pointillize:
             loc = [int(random() * w), int(random() * h)]
             complexity = self._getComplexityOfPixel(
                 self.array, loc, int(d * constant / 2))
-            r = np.ceil((complexity / 2)**(power) *
-                        d * constant * 2**power + d/1000)
+            r = self._getRadiusFromComplexity(d, power, constant, complexity)
             self._plotColorPoint(loc, r, alpha=alpha)
 
         end = time.time()
@@ -283,6 +287,25 @@ class pointillize:
             draw.ellipse((border + loc[0] - r, (border + loc[1] - r),
                           border + loc[0] + r, (border + loc[1] + r)),
                          color + (255,))
+
+    def _makeComplexityMask(self, constant):
+        """Makes a mask of image complexity for improving
+        distribution of dots to where they are needed"""
+        h = self.array.shape[0]*self.params['reduce_factor']
+        w = self.array.shape[1]*self.params['reduce_factor']
+        d = (h**2 + w**2)**0.5
+        d_mask = int(1/constant)
+        h_mask = int(d_mask/d * h)
+        w_mask = int(d_mask/d * w)
+
+        # TODO probably a faster way to compute this
+        self.complexityMask = np.empty([h_mask,w_mask])
+        for i in range(0, h_mask):
+            for j in range(0, w_mask):
+                self.complexityMask[i,j] = self._getComplexityOfPixel(self.array, 
+                                                                      [int(j*w/w_mask),
+                                                                      int(i*h/h_mask)],
+                                                                      int(constant*d))
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
