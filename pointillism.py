@@ -256,12 +256,16 @@ class pointillize:
         h = self.array.shape[0]*self.params['reduce_factor']
         w = self.array.shape[1]*self.params['reduce_factor']
         d = (h**2 + w**2)**0.5
-        for j in range(0, int(n)):
+        j = 0 
+        while j < int(n):
             loc = [int(random() * w), int(random() * h)]
-            complexity = self._getComplexityOfPixel(
+            # compare with probability matrix
+            if random() < self._testProbability(loc):
+                complexity = self._getComplexityOfPixel(
                 self.array, loc, int(d * constant / 2))
-            r = self._getRadiusFromComplexity(d, power, constant, complexity)
-            self._plotColorPoint(loc, r, alpha=alpha)
+                r = self._getRadiusFromComplexity(d, power, constant, complexity)
+                self._plotColorPoint(loc, r, alpha=alpha)
+                j+=1
 
         end = time.time()
         if to_print:
@@ -291,6 +295,8 @@ class pointillize:
     def _makeProbabilityMask(self, constant, power):
         """Makes a mask of image complexity for improving
         distribution of dots to where they are needed"""
+        
+        self.probability_is_defined = True
         h = self.array.shape[0]*self.params['reduce_factor']
         w = self.array.shape[1]*self.params['reduce_factor']
         d = (h**2 + w**2)**0.5
@@ -310,6 +316,18 @@ class pointillize:
                 area_ratio = radius**2 / (constant*d)**2
                 self.probabilityMask[i,j] =  1/area_ratio
         self.probabilityMask /= self.probabilityMask.max()
+
+    def _testProbability(self, loc):
+        if self.probability_is_defined:
+            h = self.array.shape[0]*self.params['reduce_factor']
+            w = self.array.shape[1]*self.params['reduce_factor']
+            h_mask = self.probabilityMask.shape[0]
+            w_mask = self.probabilityMask.shape[1]
+            probability = self.probabilityMask[int(loc[1]*h_mask/h),int(loc[0]*w_mask/w)]
+        else:
+            probability = 1
+
+        return probability
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
