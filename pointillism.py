@@ -26,6 +26,7 @@ class pointillize:
         self.debug = kwargs.get('debug', False)
         self.params = {}
         self.params['reduce_factor'] = kwargs.get('reduce_factor', 2)
+        self.probability_is_defined = False
         self.point_queue = kwargs.get('queue', False)
         if self.point_queue:
             self._initQueue()
