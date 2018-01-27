@@ -6,6 +6,7 @@ This module contains classes that help create pointillized images.
 
 import numpy as np
 from PIL import Image, ImageDraw, ExifTags
+from scipy import ndimage
 import imageio
 from IPython.display import display
 from random import random
@@ -272,6 +273,37 @@ class pointillize:
         if to_print:
             print('done...took %0.2f sec' % (end - start))
 
+    def plotRandomPointsComplexityGrad(self, n, constant, power, **kwargs):
+        """plots random points over image, where constant is
+        the portion of the diagonal for the max size of the bubble,
+        and power pushes the distribution towards smaller bubbles"""
+
+        alpha = kwargs.get('alpha', 255)
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRandomPointsComplexity:', end=' ')
+        start = time.time()
+
+        h = self.array.shape[0]*self.params['reduce_factor']
+        w = self.array.shape[1]*self.params['reduce_factor']
+        d = (h**2 + w**2)**0.5
+        j = 0 
+        while j < int(n):
+            loc = [int(random() * w), int(random() * h)]
+            # compare with probability matrix
+            if random() < self._testProbability(loc):
+                complexity = self.array_complexity[(int(loc[1]/self.params['reduce_factor']),
+                                                   int(loc[0]/self.params['reduce_factor']))]
+                r = self._getRadiusFromComplexity(d, power, constant, complexity)
+                self._plotColorPoint(loc, r, alpha=alpha)
+                j+=1
+
+        end = time.time()
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
+
     def _queueColorPoint(self, loc, r, color):
         """Builds queue of color points"""
         self.pointQueue.append({'loc': loc, 'r': r, 'color': color})
@@ -329,6 +361,64 @@ class pointillize:
             probability = 1
 
         return probability
+
+    def _makeComplexityArray(self, sigma1, sigma2):
+        gradient = ndimage.gaussian_gradient_magnitude(self.array.sum(axis=2), sigma=sigma1)
+        gradient2 = ndimage.maximum_filter(gradient, size=sigma2)
+        #gradient_sum = gradient + gradient2
+        self.array_complexity = 1 - gradient2/gradient2.max()
+        #self.array_complexity = 1 - gradient/gradient.max()
+
+    def _plotComplexityPoint(self, loc, r):
+        """Plots point at loc with size r with average color from
+        same in array"""
+
+        border = self.border
+        color = (int(self._getComplexityOfPixel(self.array, loc, r)*255),)
+        new_layer = Image.new('L', (int(2*r), int(2*r)), (0))
+
+        draw = ImageDraw.Draw(new_layer)
+        draw.ellipse((0, 0, 2*r, 2*r),
+                     color,)
+        self.out.paste(new_layer, (border + loc[0] - int(r),
+                                   border + loc[1] - int(r)),
+                       new_layer)
+
+    def _plotComplexityGrid(self, n, multiplier, fill):
+        """Plots symmetrical array of points over an image array,
+        where n is the number of points across the diagonal,
+        and multiplier is the ratio of the radius to the step
+        and if fill is True, fills frame, otherwise leaves border"""
+
+        frame_is_top = (inspect.currentframe().
+                        f_back.f_code.co_name == '<module>')
+        to_print = True if self.debug & frame_is_top else False
+        if to_print:
+            print('plotRecPoints:', end=' ')
+        start = time.time()
+
+        array = self.array
+        h = array.shape[0]*self.params['reduce_factor']
+        w = array.shape[1]*self.params['reduce_factor']
+        step = (w**2 + h**2)**0.5/n
+        r = step*multiplier
+        if fill:
+            for x in [int(x) for x in np.linspace(0, w, w // step)]:
+                for y in [int(y) for y in np.linspace(0, h, h // step)]:
+                    self._plotComplexityPoint([x, y], r)
+        else:
+
+            for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
+                for y in [int(y) for y in np.linspace(r, h - r,
+                                                      h // step)]:
+                    self._plotComplexityPoint([x, y], r)
+
+        end = time.time()
+        frame_is_top = (inspect.currentframe()
+                        .f_back.f_code.co_name == '<module>')
+        if to_print:
+            print('done...took %0.2f sec' % (end - start))
+
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
