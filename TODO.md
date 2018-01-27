@@ -2,7 +2,7 @@
 
 
 Cleanup
-* Properly implement prob test with test for the existence of a mask (or two loops?)
+* Lots...
 
 Optimization
 * Use gradient function instead of complexity of pixel

@@ -29,6 +29,7 @@ class pointillize:
         self.params['reduce_factor'] = kwargs.get('reduce_factor', 2)
         self.probability_is_defined = False
         self.point_queue = kwargs.get('queue', False)
+        self.plot_coverage = kwargs.get('plot_coverage', False)
         if self.point_queue:
             self._initQueue()
 
@@ -86,6 +87,11 @@ class pointillize:
                 'RGB',
                 [w + (border * 2), h + (border * 2)],
                 (255, 255, 255))
+        if self.plot_coverage:
+            self.out_coverage = Image.new(
+                'L', 
+                [w + (border * 2), h + (border * 2)],
+                (0,))
 
     def print_attributes(self):
         """Prints non-hidden object parameters"""
@@ -163,7 +169,7 @@ class pointillize:
         """Plots point at loc with size r with average color from
         same in array"""
 
-        alpha = kwargs.get('alpha', 255)
+        alpha = kwargs.get('alpha', 255) # NOT USED HERE
         border = self.border
         color = self._getColorOfPixel(loc, r)
         if self.point_queue:
@@ -171,14 +177,27 @@ class pointillize:
         else:
             # Hacking together transparency here for now
             # TODO handle more generally
-            new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
+            # alpha = int((random() * 0.5)**3 * 255 * 2**3)
+            alpha = 255
 
+            new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
             draw = ImageDraw.Draw(new_layer)
             draw.ellipse((0, 0, 2*r, 2*r),
-                         color + (int((random() * 0.5)**3 * 255 * 2**3),),)
+                         color + (alpha,))
             self.out.paste(new_layer, (border + loc[0] - int(r),
                                        border + loc[1] - int(r)),
                            new_layer)
+
+            # TODO ALSO MOVE THIS TO SEPARATE FUNCTION INSTEAD OF COPYPASTA
+            if self.plot_coverage:
+                color = (255,255,255)
+                new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
+                draw = ImageDraw.Draw(new_layer)
+                draw.ellipse((0, 0, 2*r, 2*r),
+                             color + (alpha,))
+                self.out_coverage.paste(new_layer, (border + loc[0] - int(r),
+                                           border + loc[1] - int(r)),
+                               new_layer)
 
     def plotRecPoints(self, n, multiplier, fill):
         """Plots symmetrical array of points over an image array,
@@ -370,8 +389,7 @@ class pointillize:
         #self.array_complexity = 1 - gradient/gradient.max()
 
     def _plotComplexityPoint(self, loc, r):
-        """Plots point at loc with size r with average color from
-        same in array"""
+        """"""
 
         border = self.border
         color = (int(self._getComplexityOfPixel(self.array, loc, r)*255),)
@@ -385,10 +403,7 @@ class pointillize:
                        new_layer)
 
     def _plotComplexityGrid(self, n, multiplier, fill):
-        """Plots symmetrical array of points over an image array,
-        where n is the number of points across the diagonal,
-        and multiplier is the ratio of the radius to the step
-        and if fill is True, fills frame, otherwise leaves border"""
+        """"""
 
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
