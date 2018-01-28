@@ -30,6 +30,7 @@ class pointillize:
         self.probability_is_defined = False
         self.point_queue = kwargs.get('queue', False)
         self.plot_coverage = kwargs.get('plot_coverage', False)
+        self.use_coverage = kwargs.get('use_coverage', False)
         if self.point_queue:
             self._initQueue()
 
@@ -177,8 +178,8 @@ class pointillize:
         else:
             # Hacking together transparency here for now
             # TODO handle more generally
-            # alpha = int((random() * 0.5)**3 * 255 * 2**3)
-            alpha = 255
+            alpha = int((random() * 0.5)**3 * 255 * 2**3)
+            #alpha = 255
 
             new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
             draw = ImageDraw.Draw(new_layer)
@@ -278,7 +279,18 @@ class pointillize:
         w = self.array.shape[1]*self.params['reduce_factor']
         d = (h**2 + w**2)**0.5
         j = 0 
+        count = 0 
+        if self.debug: 
+            self.count_list = []  
+            self.point_list = []
+            self.time_list = []
         while j < int(n):
+            count +=1
+            if self.debug: 
+                self.count_list.append(count)
+                self.point_list.append(j)
+                self.time_list.append(time.time() - start)
+            if count > n/10: break
             loc = [int(random() * w), int(random() * h)]
             # compare with probability matrix
             if random() < self._testProbability(loc):
@@ -287,6 +299,7 @@ class pointillize:
                 r = self._getRadiusFromComplexity(d, power, constant, complexity)
                 self._plotColorPoint(loc, r, alpha=alpha)
                 j+=1
+                count = 0
 
         end = time.time()
         if to_print:
@@ -370,12 +383,17 @@ class pointillize:
         self.probabilityMask /= self.probabilityMask.max()
 
     def _testProbability(self, loc):
-        if self.probability_is_defined:
+        if self.use_coverage:
+            location = (loc[0] + self.border, loc[1] + self.border)
+            probability = max(1 - int(self.out_coverage.getdata().getpixel(location)/230), 0)
+
+        elif self.probability_is_defined:
             h = self.array.shape[0]*self.params['reduce_factor']
             w = self.array.shape[1]*self.params['reduce_factor']
             h_mask = self.probabilityMask.shape[0]
             w_mask = self.probabilityMask.shape[1]
             probability = self.probabilityMask[int(loc[1]*h_mask/h),int(loc[0]*w_mask/w)]
+
         else:
             probability = 1
 
