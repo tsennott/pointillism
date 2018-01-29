@@ -268,6 +268,12 @@ class pointillize:
         and power pushes the distribution towards smaller bubbles"""
 
         alpha = kwargs.get('alpha', 255)
+        use_gradient = kwargs.get('use_gradient', False)
+
+
+        if use_gradient:
+            self._makeComplexityArray(1, 25)
+
         frame_is_top = (inspect.currentframe().
                         f_back.f_code.co_name == '<module>')
         to_print = True if self.debug & frame_is_top else False
@@ -294,43 +300,16 @@ class pointillize:
             loc = [int(random() * w), int(random() * h)]
             # compare with probability matrix
             if random() < self._testProbability(loc):
-                complexity = self._getComplexityOfPixel(
-                self.array, loc, int(d * constant / 2))
+                if use_gradient:
+                    complexity = self.array_complexity[(int(loc[1]/self.params['reduce_factor']),
+                                                   int(loc[0]/self.params['reduce_factor']))]
+                else:
+                    complexity = self._getComplexityOfPixel(
+                                        self.array, loc, int(d * constant / 2))
                 r = self._getRadiusFromComplexity(d, power, constant, complexity)
                 self._plotColorPoint(loc, r, alpha=alpha)
                 j+=1
                 count = 0
-
-        end = time.time()
-        if to_print:
-            print('done...took %0.2f sec' % (end - start))
-
-    def plotRandomPointsComplexityGrad(self, n, constant, power, **kwargs):
-        """plots random points over image, where constant is
-        the portion of the diagonal for the max size of the bubble,
-        and power pushes the distribution towards smaller bubbles"""
-
-        alpha = kwargs.get('alpha', 255)
-        frame_is_top = (inspect.currentframe().
-                        f_back.f_code.co_name == '<module>')
-        to_print = True if self.debug & frame_is_top else False
-        if to_print:
-            print('plotRandomPointsComplexity:', end=' ')
-        start = time.time()
-
-        h = self.array.shape[0]*self.params['reduce_factor']
-        w = self.array.shape[1]*self.params['reduce_factor']
-        d = (h**2 + w**2)**0.5
-        j = 0 
-        while j < int(n):
-            loc = [int(random() * w), int(random() * h)]
-            # compare with probability matrix
-            if random() < self._testProbability(loc):
-                complexity = self.array_complexity[(int(loc[1]/self.params['reduce_factor']),
-                                                   int(loc[0]/self.params['reduce_factor']))]
-                r = self._getRadiusFromComplexity(d, power, constant, complexity)
-                self._plotColorPoint(loc, r, alpha=alpha)
-                j+=1
 
         end = time.time()
         if to_print:
@@ -385,7 +364,7 @@ class pointillize:
     def _testProbability(self, loc):
         if self.use_coverage:
             location = (loc[0] + self.border, loc[1] + self.border)
-            probability = max(1 - int(self.out_coverage.getdata().getpixel(location)/230), 0)
+            probability = max(1 - int(self.out_coverage.getdata().getpixel(location)/255), 0)
 
         elif self.probability_is_defined:
             h = self.array.shape[0]*self.params['reduce_factor']

@@ -1,12 +1,17 @@
 # TODO
 
 Current
-* Get mask working for transparent images
-  * Implement alpha properly using global settings
+* Finish mask and transparency work
+  * Implement alpha properly using global settings, including setting the distribution
   * Make prob function cutoff also a passable parameter
-* Remove `_make_ProbabilityMask`, implement gradient version into `plotRandomPointsComplexity`
+  * HOW DEAL WITH PLOT REC POINTS FOR CUTOFF??
+* Implement gradient version into `plotRandomPointsComplexity`
+  * DONE, need to pass parameters for sigma somehow
+  * Point count is lower for automatic cutoff, need to increase contrast maybe
+* Make the debug plots a function
+* Delete `_makeProbabilityMask` and the complexity plotting functions, or kick into experimental subclass
 * Split off the experiments into a new notebook (maybe)
-  * Save some example images, including point cloud
+  * Save some example images, including point cloud, the edge images and the edgeless images
 
 Cleanup
 * 
