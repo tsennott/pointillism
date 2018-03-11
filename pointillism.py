@@ -31,6 +31,7 @@ class pointillize:
         self.point_queue = kwargs.get('queue', False)
         self.plot_coverage = kwargs.get('plot_coverage', False)
         self.use_coverage = kwargs.get('use_coverage', False)
+        self.use_complexity = kwargs.get('use_complexity', True)
         if self.point_queue:
             self._initQueue()
 
@@ -238,34 +239,38 @@ class pointillize:
     def _getComplexityOfPixel(self, array, loc, r):
         """Returns value [0,1] of average complexity of the np array
         of an image within a square of width 2r at location loc=[x,y]"""
-        loc = [int(loc[0]/self.params['reduce_factor']),
-               int(loc[1]/self.params['reduce_factor'])]
-        r = int(r/self.params['reduce_factor'])
+        if self.use_complexity:
+            loc = [int(loc[0]/self.params['reduce_factor']),
+                   int(loc[1]/self.params['reduce_factor'])]
+            r = int(r/self.params['reduce_factor'])
 
-        left = max(loc[0] - r, 0)
-        right = min(loc[0] + r, array.shape[1])
-        bottom = max(loc[1] - r, 0)
-        top = min(loc[1] + r, array.shape[0])
-        x = range(left, right)
-        y = range(bottom, top)
-        if len(x) == 0 | len(y) == 0:
-            return 0
-        R = array[np.ix_(y, x, [0])].max() - array[np.ix_(y, x, [0])].min()
-        G = array[np.ix_(y, x, [1])].max() - array[np.ix_(y, x, [1])].min()
-        B = array[np.ix_(y, x, [2])].max() - array[np.ix_(y, x, [2])].min()
-        if (np.isnan(R) | np.isnan(G) | np.isnan(B)):
-            R, G, B = 0, 0, 0
-        return 1 - (R + G + B) / (255 * 3.0)
+            left = max(loc[0] - r, 0)
+            right = min(loc[0] + r, array.shape[1])
+            bottom = max(loc[1] - r, 0)
+            top = min(loc[1] + r, array.shape[0])
+            x = range(left, right)
+            y = range(bottom, top)
+            if len(x) == 0 | len(y) == 0:
+                return 0
+            R = array[np.ix_(y, x, [0])].max() - array[np.ix_(y, x, [0])].min()
+            G = array[np.ix_(y, x, [1])].max() - array[np.ix_(y, x, [1])].min()
+            B = array[np.ix_(y, x, [2])].max() - array[np.ix_(y, x, [2])].min()
+            if (np.isnan(R) | np.isnan(G) | np.isnan(B)):
+                R, G, B = 0, 0, 0
+            return 1 - (R + G + B) / (255 * 3.0)
+        else:
+            return np.random.random()
 
-    def _getRadiusFromComplexity(self, d, power, constant, complexity):
+    def _getRadiusFromComplexity(self, d, power, constant, min_size, complexity):
         """Returns radius based on complexity calculation"""
         return np.ceil((complexity / 2)**(power) *
-                        d * constant * 2**power + d/1000)
+                        d * constant * 2**power + d*min_size)
 
-    def plotRandomPointsComplexity(self, n, constant, power, **kwargs):
+    def plotRandomPointsComplexity(self, n, constant, power, min_size, **kwargs):
         """plots random points over image, where constant is
         the portion of the diagonal for the max size of the bubble,
-        and power pushes the distribution towards smaller bubbles"""
+        and power pushes the distribution towards smaller bubbles. 
+        Min is the portion of the diagonal for the min bubble size"""
 
         alpha = kwargs.get('alpha', 255)
         use_gradient = kwargs.get('use_gradient', False)
@@ -290,6 +295,7 @@ class pointillize:
             self.count_list = []  
             self.point_list = []
             self.time_list = []
+            self.radius_list = []
         while j < int(n):
             count +=1
             if self.debug: 
@@ -306,8 +312,9 @@ class pointillize:
                 else:
                     complexity = self._getComplexityOfPixel(
                                         self.array, loc, int(d * constant / 2))
-                r = self._getRadiusFromComplexity(d, power, constant, complexity)
+                r = self._getRadiusFromComplexity(d, power, constant, min_size, complexity)
                 self._plotColorPoint(loc, r, alpha=alpha)
+                self.radius_list.append(r)
                 j+=1
                 count = 0
 
