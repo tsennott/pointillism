@@ -443,12 +443,13 @@ class pointillize:
         """Saves files to location"""
 
         suffix = kwargs.get('suffix', '')
+        prefix = kwargs.get('prefix', '')
 
         if os.path.isdir(location) is not True:
             os.makedirs(location)
 
         self.out.save(
-            location + '/' + self.filename.split('/')[1:][0] +
+            location + '/' + prefix + self.filename.split('/')[1:][0] +
             ' - ' + suffix + '.png')
 
 
