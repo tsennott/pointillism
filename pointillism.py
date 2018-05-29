@@ -13,6 +13,7 @@ from random import random
 import os
 import time
 import inspect
+from matplotlib import pyplot as plt
 
 # Base class definitions, handles files and image manipulations
 
@@ -27,7 +28,7 @@ class pointillize:
         self.debug = kwargs.get('debug', False)
         self.params = {}
         self.params['reduce_factor'] = kwargs.get('reduce_factor', 2)
-        self.params['increase_factor'] = kwargs.get('increase_factor', 2)
+        self.params['increase_factor'] = kwargs.get('increase_factor', 1)
         self.probability_is_defined = False
         self.point_queue = kwargs.get('queue', False)
         self.plot_coverage = kwargs.get('plot_coverage', False)
@@ -142,7 +143,14 @@ class pointillize:
         if original=True"""
 
         original = kwargs.get('original', False)
-        image = self.image if original else self.out
+        coverage = kwargs.get('coverage', False)
+        if original:
+            image = self.image
+        elif coverage:
+            image = self.out_coverage
+        else:
+            image = self.out
+
         print(self.filename)
         ratio = 1000/(image.size[0]**2 + image.size[1]**2)**0.5
         display(image.resize(
@@ -170,7 +178,7 @@ class pointillize:
         B = int(self.array[np.ix_(y, x, [2])].mean())
         return (R, G, B)
 
-    def _plotColorPoint(self, loc, r, **kwargs):
+    def _plotColorPoint(self, loc, r, mask=False, **kwargs):
         """Plots point at loc with size r with average color from
         same in array"""
 
@@ -182,8 +190,8 @@ class pointillize:
         else:
             # Hacking together transparency here for now
             # TODO handle more generally
-            alpha = int((random() * 0.5)**3 * 255 * 2**3)
-            #alpha = 255
+            #alpha = int((random() * 0.5)**3 * 255 * 2**3)
+            alpha = 255
 
             new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
             draw = ImageDraw.Draw(new_layer)
@@ -194,7 +202,7 @@ class pointillize:
                            new_layer)
 
             # TODO ALSO MOVE THIS TO SEPARATE FUNCTION INSTEAD OF COPYPASTA
-            if self.plot_coverage:
+            if self.plot_coverage & mask:
                 color = (255,255,255)
                 new_layer = Image.new('RGBA', (int(2*r), int(2*r)), (0, 0, 0, 0))
                 draw = ImageDraw.Draw(new_layer)
@@ -217,8 +225,8 @@ class pointillize:
             print('plotRecPoints:', end=' ')
         start = time.time()
 
-        h = self.out.size[1]
-        w = self.out.size[0]
+        h = self.array.shape[0]*self.params['net_factor']
+        w = self.array.shape[1]*self.params['net_factor']
         step = (w**2 + h**2)**0.5/n
         r = step*multiplier
         if fill:
@@ -278,7 +286,7 @@ class pointillize:
         return np.ceil((complexity / 2)**(power) *
                         d * constant * 2**power + d*min_size)
 
-    def plotRandomPointsComplexity(self, n, constant, power, min_size, **kwargs):
+    def plotRandomPointsComplexity(self, n, constant=1e-2, power=1, min_size=1e-3, **kwargs):
         """plots random points over image, where constant is
         the portion of the diagonal for the max size of the bubble,
         and power pushes the distribution towards smaller bubbles. 
@@ -286,10 +294,11 @@ class pointillize:
 
         alpha = kwargs.get('alpha', 255)
         use_gradient = kwargs.get('use_gradient', False)
-
+        grad_size = kwargs.get('grad_size', 20)
+        grad_mult = kwargs.get('grad_mult', .7)
 
         if use_gradient:
-            self._makeComplexityArray(1, 25)
+            self._makeComplexityArray(1, grad_size, grad_mult)
 
         locations = kwargs.get('locations', False)
         if locations is not False:
@@ -301,8 +310,8 @@ class pointillize:
             print('plotRandomPointsComplexity:', end=' ')
         start = time.time()
 
-        h = self.out.size[1]
-        w = self.out.size[0]
+        h = self.array.shape[0]*self.params['net_factor']
+        w = self.array.shape[1]*self.params['net_factor']
         d = (h**2 + w**2)**0.5
         j = 0 
         count = 0 
@@ -317,7 +326,7 @@ class pointillize:
                 self.count_list.append(count)
                 self.point_list.append(j)
                 self.time_list.append(time.time() - start)
-            if count > n/10: break
+            if count > n/50: break
             if locations is not False:
                 loc = locations[j]
             else:
@@ -331,7 +340,7 @@ class pointillize:
                     complexity = self._getComplexityOfPixel(
                                         self.array, loc, int(d * constant / 2))
                 r = self._getRadiusFromComplexity(d, power, constant, min_size, complexity)
-                self._plotColorPoint(loc, r, alpha=alpha)
+                self._plotColorPoint(loc, r, alpha=alpha, mask=True)
                 self.radius_list.append(r)
                 j+=1
                 count = 0
@@ -361,101 +370,36 @@ class pointillize:
                           border + loc[0] + r, (border + loc[1] + r)),
                          color + (255,))
 
-    def _makeProbabilityMask(self, constant, power):
-        """Makes a mask of image complexity for improving
-        distribution of dots to where they are needed"""
-        
-        self.probability_is_defined = True
-        h = self.array.shape[0]*self.params['reduce_factor']
-        w = self.array.shape[1]*self.params['reduce_factor']
-        d = (h**2 + w**2)**0.5
-        d_mask = int(1/constant)
-        h_mask = int(d_mask/d * h)
-        w_mask = int(d_mask/d * w)
-
-        # TODO probably a faster way to compute this
-        self.probabilityMask = np.empty([h_mask,w_mask])
-        for i in range(0, h_mask):
-            for j in range(0, w_mask):
-                complexity = self._getComplexityOfPixel(self.array, 
-                                                        [int(j*w/w_mask),
-                                                        int(i*h/h_mask)],
-                                                        int(constant*d))
-                radius = self._getRadiusFromComplexity(d, power, constant, complexity)
-                area_ratio = radius**2 / (constant*d)**2
-                self.probabilityMask[i,j] =  1/area_ratio
-        self.probabilityMask /= self.probabilityMask.max()
-
-    def _testProbability(self, loc):
-        if self.use_coverage:
-            location = (loc[0] + self.border, loc[1] + self.border)
-            probability = max(1 - int(self.out_coverage.getdata().getpixel(location)/255), 0)
-
-        elif self.probability_is_defined:
-            h = self.array.shape[0]*self.params['reduce_factor']
-            w = self.array.shape[1]*self.params['reduce_factor']
-            h_mask = self.probabilityMask.shape[0]
-            w_mask = self.probabilityMask.shape[1]
-            probability = self.probabilityMask[int(loc[1]*h_mask/h),int(loc[0]*w_mask/w)]
-
-        else:
-            probability = 1
-
-        return probability
-
-    def _makeComplexityArray(self, sigma1, sigma2):
+    def _makeComplexityArray(self, sigma1, sigma2, multiplier=.8):
         gradient = ndimage.gaussian_gradient_magnitude(self.array.sum(axis=2), sigma=sigma1)
         gradient2 = ndimage.maximum_filter(gradient, size=sigma2)
+
         #gradient_sum = gradient + gradient2
-        self.array_complexity = 1 - gradient2/gradient2.max()
+        self.array_complexity = 1 - gradient2/gradient2.max()*multiplier-(1-multiplier)
         #self.array_complexity = 1 - gradient/gradient.max()
 
-    def _plotComplexityPoint(self, loc, r):
-        """"""
+    def _plotIterations(self):
+       
+        f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        ax1.plot(self.count_list)
+        ax2.plot(self.time_list, self.count_list)
+        ax1.set_ylabel('Consecutive non-plots')
+        ax1.set_xlabel('Iterations')
+        ax2.set_xlabel('Seconds')
+        ax1.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+        ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+        f.set_figwidth(10)
 
-        border = self.border
-        color = (int(self._getComplexityOfPixel(self.array, loc, r)*255),)
-        new_layer = Image.new('L', (int(2*r), int(2*r)), (0))
-
-        draw = ImageDraw.Draw(new_layer)
-        draw.ellipse((0, 0, 2*r, 2*r),
-                     color,)
-        self.out.paste(new_layer, (border + loc[0] - int(r),
-                                   border + loc[1] - int(r)),
-                       new_layer)
-
-    def _plotComplexityGrid(self, n, multiplier, fill):
-        """"""
-
-        frame_is_top = (inspect.currentframe().
-                        f_back.f_code.co_name == '<module>')
-        to_print = True if self.debug & frame_is_top else False
-        if to_print:
-            print('plotRecPoints:', end=' ')
-        start = time.time()
-
-        array = self.array
-        h = array.shape[0]*self.params['reduce_factor']
-        w = array.shape[1]*self.params['reduce_factor']
-        step = (w**2 + h**2)**0.5/n
-        r = step*multiplier
-        if fill:
-            for x in [int(x) for x in np.linspace(0, w, w // step)]:
-                for y in [int(y) for y in np.linspace(0, h, h // step)]:
-                    self._plotComplexityPoint([x, y], r)
-        else:
-
-            for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
-                for y in [int(y) for y in np.linspace(r, h - r,
-                                                      h // step)]:
-                    self._plotComplexityPoint([x, y], r)
-
-        end = time.time()
-        frame_is_top = (inspect.currentframe()
-                        .f_back.f_code.co_name == '<module>')
-        if to_print:
-            print('done...took %0.2f sec' % (end - start))
-
+        f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        ax1.plot(self.point_list)
+        ax2.plot(self.time_list, self.point_list)
+        ax1.set_ylabel('Plotted points')
+        ax1.set_xlabel('Iterations')
+        ax2.set_xlabel('Seconds')
+        ax1.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+        ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+        f.set_figwidth(10)
+        plt.show() 
 
     def save_out(self, location, **kwargs):
         """Saves files to location"""
@@ -557,7 +501,7 @@ class pointillizeStack(pointillize):
         self.image_stack = []
 
         to_print = self.debug
-        reverse = kwargs.get('reverse', False)
+        reverse = kwargs.get('reverse', True)
         n = len(set)
         if to_print:
             print('Building image: ', end=' ')

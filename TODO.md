@@ -1,5 +1,12 @@
 # TODO
 
+Really current
+* Fix border issue (DONE)
+* See below, how make automatic cutoff for coveerage
+* Change all optional args to defaulted args
+* MAssive cleanup
+* Possibly massive refactor or from scratch
+
 Current
 * Finish mask and transparency work
   * Implement alpha properly using global settings, including setting the distribution
