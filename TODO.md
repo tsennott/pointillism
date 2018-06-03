@@ -1,42 +1,40 @@
 # TODO
 
-Really current
-* Fix border issue (DONE)
-* See below, how make automatic cutoff for coveerage
-* Change all optional args to defaulted args
-* MAssive cleanup
-* Possibly massive refactor or from scratch
-
-Current
-* Finish mask and transparency work
-  * Implement alpha properly using global settings, including setting the distribution
-  * Make prob function cutoff also a passable parameter
-  * HOW DEAL WITH PLOT REC POINTS FOR CUTOFF??
-* Implement gradient version into `plotRandomPointsComplexity`
-  * DONE, need to pass parameters for sigma somehow
-  * Point count is lower for automatic cutoff, need to increase contrast maybe
-* Make the debug plots a function
-* Delete `_makeProbabilityMask` and the complexity plotting functions, or kick into experimental subclass
-* Split off the experiments into a new notebook (maybe)
-  * Save some example images, including point cloud, the edge images and the edgeless images
-
-Cleanup
-* 
+## Current
 
 
-Optimization
-* Use gradient function instead of complexity of pixel
-  * OK, WORKING BUT NEED TO TEST QUALITY
-* Consider better way to distribute dots
-  * Use a coverage mask to only pick uncovered areas?
-    * DONE, working great
-  * Segment into sections to do the randomness in?
+* CLEAN UP GITHUB MASTER 
 
-Coverage stop (time and implement one of these)
-* Implement a stop method using a partially transparent (uniform) black coverage test
+
+* Better resizing function for website for speed...
+* Make gradient size function of diagonal, not pixels. Experiment with different settings
+
+* Expose meta grouped build method with a few presets, make a public reset function
+  * add ability to override settings like size (e.g. for uniform)
+  * handle fill=True for border=0...how?
+  * and maybe a public debug plot grouped method
+  * Also default grad_mult to 1 and adjust settings accordlingly
+  * Link gradient size and plotrecpoints to these settings
+
+* Massive cleanup, drop unnecesary methods, add lots of comments, etc
+  * Change all optional args to defaulted args!!
+  * organize params into dicts (like radius_list, etc etc)
+  * Wrap lots of stuff in if debug, like plotting coverage and the like
+  * Maybe drop PointillizePile? Or at least change names to be clearer
+  * Definitely drop probablity mask stuff, 
+  * Drop plotComplexityGrid and Point, in favor of displaying raw array_complexity
+  * Get rid of frame is top in favor of verbose=self.verbose?
+
+* Add explicit movie functions, and chunked movie functions, probably to second file
+
+
+
+## Algorithm notes
+Notes on possible automatic coverage stop (time and implement one of these)
+* Implement a stop method using a the coverage plot
   * Percentage black? Or rate of change of coverage vs attempted iteration?
     * Both would need to be evaluated only every x loops as they are expensive
-  * Or number of misses?
-* Analytical a priori method for comaring coverage?
+* Could look at slope of time vs points or interations vs points as well, that would be much cheaper
+
 
 
