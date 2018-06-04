@@ -146,7 +146,8 @@ class pointillize:
         self._newImage(self.border)
 
     def resize(self, ratio, min_size):
-        """Resizes by ratio, or to min diagonal size in pixels"""
+        """Resizes by ratio, or to min diagonal size in pixels, 
+        whichever is larger"""
 
         w = self.image.size[0]
         h = self.image.size[1]
@@ -399,24 +400,24 @@ class pointillize:
 
         self.settings = {
                     'uniform': {   
-                            'PlotRecPoints': {'n': 80},
-                            'PlotPointsComplexity': {'constant': 0.004, 'power': 1, 'grad_size': 10, 'min_size': 0.004}
+                            'PlotRecPoints': {'n': 40, 'fill': (self.border==0)},
+                            'PlotPointsComplexity': {'constant': 0.004, 'power': 1, 'grad_size': .005, 'min_size': 0.004}
                         }, 
                     'coarse': {
-                            'PlotRecPoints': {'n': 40},
-                            'PlotPointsComplexity': {'constant': 0.02, 'power': 2, 'grad_size': 20, 'min_size': 0.004}            
+                            'PlotRecPoints': {'n': 20, 'fill': (self.border==0)},
+                            'PlotPointsComplexity': {'constant': 0.016, 'power': 2, 'grad_size': .019, 'min_size': 0.004}            
                         }, 
                     'balanced': {
-                            'PlotRecPoints': {'n': 80},
-                            'PlotPointsComplexity': {'constant': 0.012, 'power': 3, 'grad_size': 10, 'min_size': 0.002}
+                            'PlotRecPoints': {'n': 40, 'fill': (self.border==0)},
+                            'PlotPointsComplexity': {'constant': 0.012, 'power': 3, 'grad_size': .015, 'min_size': 0.002}
                         }, 
                     'fine': {
-                            'PlotRecPoints': {'n': 100},
-                            'PlotPointsComplexity': {'constant': 0.008, 'power': 3, 'grad_size': 10, 'min_size': 0.001}
+                            'PlotRecPoints': {'n': 80, 'fill': (self.border==0)},
+                            'PlotPointsComplexity': {'constant': 0.008, 'power': 3, 'grad_size': .01, 'min_size': 0.001}
                         },
                     'ultrafine': {
-                            'PlotRecPoints': {'n': 150},
-                            'PlotPointsComplexity': {'constant': 0.005, 'power': 3, 'grad_size': 10, 'min_size': 0.0005}           
+                            'PlotRecPoints': {'n': 100, 'fill': (self.border==0)},
+                            'PlotPointsComplexity': {'constant': 0.005, 'power': 3, 'grad_size': .006, 'min_size': 0.0005}           
                         },
                    }
 
@@ -462,8 +463,12 @@ class pointillize:
                          color + (255,))
 
     def _makeComplexityArray(self, sigma1, sigma2, multiplier=.8):
+
+        h = self.array.shape[0]
+        w = self.array.shape[1]
+        d = (h**2 + w**2)**0.5
         gradient = ndimage.gaussian_gradient_magnitude(self.array.sum(axis=2), sigma=sigma1)
-        gradient2 = ndimage.maximum_filter(gradient, size=sigma2)
+        gradient2 = ndimage.maximum_filter(gradient, size=d*sigma2)
 
         #gradient_sum = gradient + gradient2
         self.array_complexity = 1 - gradient2/gradient2.max()*multiplier-(1-multiplier)
