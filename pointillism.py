@@ -730,6 +730,7 @@ class pointillizePile(pointillizeStack):
             self.outputs_store.append(self.out)
         print('done....took %0.2f seconds' % (time.time()-start))
 
+
     def run_pile_gifs(self, location, n, save_steps, step_duration, **kwargs):
 
         suffix = kwargs.get('suffix', '')

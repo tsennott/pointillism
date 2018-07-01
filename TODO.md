@@ -7,11 +7,11 @@
 
 
 * Better resizing function for website for speed...
-* Make gradient size function of diagonal, not pixels. Experiment with different settings
 
 * Expose meta grouped build method with a few presets, make a public reset function
+  * make rect a function of diagonal as well, and dial that in
   * add ability to override settings like size (e.g. for uniform)
-  * handle fill=True for border=0...how?
+  * handle fill=True for border=0...how? Think I've solved it but check again
   * and maybe a public debug plot grouped method
   * Also default grad_mult to 1 and adjust settings accordlingly
   * Link gradient size and plotrecpoints to these settings
