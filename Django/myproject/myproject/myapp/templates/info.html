@@ -25,12 +25,16 @@
         }
 
         .title {
-            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/IMG_1261.jpg - no border copy.png');
+            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/65_IMG_1261_uniform_pointillized - headerimage.jpg');
+            background-size: 100% 100%;
             padding: 5px;
             border-radius: 6px;
             height: 108px;
             max-width: 388px;
             margin: 0 auto;
+        }
+        .title h1 {
+            color: #FFFFFF;
         }
         .title a:link {
             color: #FFFFFF;
@@ -98,10 +102,10 @@
         <!-- Info section -->
         <div class="body">
         <h2>Info on pointillizer:</h2>
-        <p> Works best on full-sized images. Landscapes or simple images are ideal.</p>
-        <p><a href="https://photos.app.goo.gl/Dv6IObEJnsxKI3bn1">Examples</a>, including gifs</p> 
+        <p> Landscapes or images with good contrast are ideal. Not the best for photos with people</p>
         <p> Image manipulation built from scrath in Python with Pillow, site deployed using Django on AWS Elastic Beanstalk.</p>
         <p> Images in gallery were uploaded by users or myself and are copyright their original owners</p>
+        <p><a href="https://photos.app.goo.gl/Dv6IObEJnsxKI3bn1">Examples</a>, including gifs</p> 
         <p> Check out experimental feature for building gifs <a href={% url 'gif' guid_id=guid_id %}>here</a>, a little slow currently.
          <!-- Contacts and links  -->
             <p><a href="https://github.com/tsennott/etc_projects/tree/master/Pointilism">github</a><br>

@@ -38,8 +38,11 @@ def upload(request, guid_id):
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
             point = pointillize(image=orig_image, reduce_factor=2)
-            point.plotRecPoints(n=40, multiplier=1, fill=False)
-            point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
+            # point.plotRecPoints(n=40, multiplier=1, fill=False)
+            # point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
+            point.resize(ratio=0, min_size=2200)
+            setting = request.POST['setting']
+            point.plot(setting)
             new_stringIO = io.BytesIO()
             point.out.convert('RGB').save(new_stringIO,
                                           orig_file.content_type.split('/')
@@ -47,6 +50,7 @@ def upload(request, guid_id):
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
+                                             ' ' + setting  +
                                              ' pointillized.jpg'),
                                             orig_file.content_type,
                                             None,
@@ -106,15 +110,15 @@ def gif(request, guid_id):
             orig_image = Image.open(orig_file)
             point = pointillizeStack(image=orig_image, reduce_factor=2,
                                      border=0, queue=True)
-            point.resize(0.5, 2200)
-            point.plotRecPoints(n=40, multiplier=1, fill=True)
-            point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
+            point.resize(0, 550)
+            point.plot('balanced')
             multipliers = [5, 4.5, 4, 3.5, 3, 2.6, 2.3, 2, 1.75,
                            1.5, 1.25, 1.1, 1, 1]
+            multipliers.reverse()
             point.build_multipliers(multipliers, reverse=True)
             # point.save_gif('temp/' + guid_id + '_pointqueue.gif', 0.1)
             new_gif_IO = io.BytesIO()
-            point.save_gif(new_gif_IO, 0.2)
+            point.save_gif(new_gif_IO, 0.1)
             new_file = InMemoryUploadedFile(new_gif_IO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +

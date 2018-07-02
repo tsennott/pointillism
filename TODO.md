@@ -3,8 +3,9 @@
 ## Current
 
 
-* CLEAN UP GITHUB MASTER 
-
+* CLEAN UP GITHUB MASTER (think mostly done?)
+* (maybe later) implement MP in Bulk processing
+* (maybe later) change data model for website to allow source files with child result files
 
 * Better resizing function for website for speed...
 

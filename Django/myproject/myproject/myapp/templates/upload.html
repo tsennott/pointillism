@@ -25,12 +25,16 @@
         }
 
         .title {
-            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/IMG_1261.jpg - no border copy.png');
+            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/65_IMG_1261_uniform_pointillized - headerimage.jpg');
+            background-size: 100% 100%;
             padding: 5px;
             border-radius: 6px;
             height: 108px;
             max-width: 388px;
             margin: 0 auto;
+        }
+        .title h1 {
+            color: #FFFFFF;
         }
         .title a:link {
             color: #FFFFFF;
@@ -131,7 +135,15 @@
         <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form">
 
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
-            <p><input type="submit" value="Upload" id="button" onclick='showHide()'></p>
+            <p><select id="button" name="setting">
+                  <option value="balanced" selected >(optional) choose a setting</option>
+                  <option value="balanced">Balanced (default)</option>
+                  <option value="fine">Fine</option>
+                  <option value="ultrafine">Ultrafine</option>
+                  <option value="coarse">Coarse</option>
+                  <option value="uniform">Uniform</option>
+                </select>
+            <p><input type="submit" value="Upload!" id="button" onclick='showHide()'></p>
         </form>
             <div id="loadingimage" class="blink" style="display:none;">
                 Loading, please wait...
@@ -145,8 +157,8 @@
             <div class="link_text"><em>Copy this <a href="{% url "upload" guid_id=guid_id %}">link</a> to return here later</em>
             </div><br>
                 {% for document in documents %}
-                    {% thumbnail document.docfile.url "300x300" crop="center" as im %}
-                    <a href="{{ document.docfile.url }}"><img src="{{ im.url }}"></a>
+                    {% thumbnail document.docfile.url "600x600" crop="center" as im %}
+                    <a href="{{ document.docfile.url }}"><img src="{{ im.url }}" width="300" height="300"></a>
                     {% endthumbnail %}
                     <br>
                 {% endfor %}

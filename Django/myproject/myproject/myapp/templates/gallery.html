@@ -25,12 +25,16 @@
         }
 
         .title {
-            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/IMG_1261.jpg - no border copy.png');
+            background-image: url('https://myproject-s3-bucket.s3.amazonaws.com/media/65_IMG_1261_uniform_pointillized - headerimage.jpg');
+            background-size: 100% 100%;
             padding: 5px;
             border-radius: 6px;
             height: 108px;
             max-width: 388px;
             margin: 0 auto;
+        }
+        .title h1 {
+            color: #FFFFFF;
         }
         .title a:link {
             color: #FFFFFF;
@@ -92,8 +96,8 @@
         {% load thumbnail %}
         {% if documents %}
                 {% for document in documents %}
-                    {% thumbnail document.docfile.url "300x300" crop="center" as im %}
-                    <a href="{{ document.docfile.url }}"><img src="{{ im.url }}"></a>
+                    {% thumbnail document.docfile.url "600x600" crop="center" as im %}
+                    <a href="{{ document.docfile.url }}"><img src="{{ im.url }}" width="300" height="300"></a>
                     {% endthumbnail %}
                     <br>
                 {% endfor %}
