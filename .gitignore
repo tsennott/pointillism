@@ -5,26 +5,14 @@ __pycache__
 *.log
 *.zip
 logs
-media
-media_out
-images
-images_out
-orientation_test
-orientation_test_out
+
 deprecated
 temp
 logs
-data
-downloaded-example-data
-private_data.json
-script_twitter_desktop_settings.json
-wallpapers
-utilities
-movies
-composite
-etc
-images_bulk
-images_aws
-images_bulk_out
+images
+images_out
+images_s3
 IAM User.csv
+opengl
+
 

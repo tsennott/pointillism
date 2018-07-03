@@ -3,9 +3,6 @@
 ## Current
 
 
-* CLEAN UP NEW GITHUB REPO!
-  * Move working changes and deprecate etc_projects version
-  
 Main code
 * implement MP in Bulk processing
 * add use_gradient as `__init__` level argument
