@@ -9,7 +9,6 @@ Main code
 * Publish as library!
 
 Site
-* implement a stylesheet!
 * (later) fix scipy issue
 * (later) change data model for website to allow source files with child result files
 * (later) 
