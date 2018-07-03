@@ -23,10 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '-q@x+fbn4vl-+qs!*a=+(u%j1w76z_(7re-1*b+yb&a+rj=-&+'
+SECRET_KEY = 'XXXXXXXXXXXXXXXXXXXXXXX'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -41,7 +41,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myproject.myapp',
-    'storages'
+    'storages',
+    'sorl.thumbnail'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -109,8 +110,8 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'myproject',
-            'USER': 'postgres',
-            'PASSWORD': 'REDACTED',
+            'USER': 'XXXXXX',
+            'PASSWORD': 'XXXXXXXX,
             'HOST': 'localhost',
             'PORT': '5433',
             }
@@ -138,10 +139,10 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_URL = '/static/'
 
-AWS_STORAGE_BUCKET_NAME = 'myproject-s3-bucket'
+AWS_STORAGE_BUCKET_NAME = 'XXXXXXXXXXXXXXXXXXXXXXX'
 AWS_S3_REGION_NAME = 'us-west-2'  # e.g. us-east-2
-AWS_ACCESS_KEY_ID = 'xxx'
-AWS_SECRET_ACCESS_KEY = 'yyy'
+AWS_ACCESS_KEY_ID = 'XXXXXXXXXXXXXXXXXXXXXXX'
+AWS_SECRET_ACCESS_KEY = 'XXXXXXXXXXXXXXXXXXXXXXX'
 
 # Tell django-storages the domain to use to refer to static files.
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
