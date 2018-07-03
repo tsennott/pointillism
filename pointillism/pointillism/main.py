@@ -1,13 +1,12 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This module contains classes that help create pointillized images.
+Single base class for pointillism package, handles all basic image functions
 """
 
 import numpy as np
 from PIL import Image, ImageDraw, ExifTags, ImageEnhance
 from scipy import ndimage
-import imageio
 from IPython.display import display
 from random import random
 import os
@@ -15,10 +14,8 @@ import time
 import inspect
 from matplotlib import pyplot as plt
 
-# Base class definitions, handles files and image manipulations
 
-
-class pointillize:
+class main:
     """Base class for pointillzation project"""
 
     def __init__(self, *args, **kwargs):
@@ -559,209 +556,3 @@ class pointillize:
         self.out.save(
             location + '/' + prefix + self.filename.split('/')[1:][0] +
             ' - ' + suffix + '.png')
-
-
-# Subclass adding workflows and image stack (gif) handling
-
-class pointillizeStack(pointillize):
-    """Subclass of pointillize for making stacks of images.
-    Only supports single images currently"""
-
-    def __init__(self, *args, **kwargs):
-
-        pointillize.__init__(self, *args, **kwargs)
-
-    def new_queue(self):
-        """Builds a new set of lists for the queue"""
-
-        self.queue = {'methods': [], 'names': [], 'args': [], 'repeats': []}
-
-    def add_to_queue(self, method, args, n):
-        """Adds a new method to the queue, to be run with args, n times"""
-
-        self.queue['methods'].append(method)
-        self.queue['names'].append(method.__name__)
-        self.queue['args'].append(args)
-        self.queue['repeats'].append(n)
-
-    def print_queue(self):
-        """Prints current status of the queue"""
-        for i, method in enumerate(self.queue['methods']):
-            print(self.queue['names'][i], self.queue['args']
-                  [i], self.queue['repeats'][i])
-
-    def run_queue(self, **kwargs):
-        """Runs queue, primarily for build_stacks()"""
-
-        # Make new image
-        self._newImage(self.border)
-
-        # Set some parameters
-        save_steps = kwargs.get('save_steps', False)
-        frame_is_top = (inspect.currentframe().
-                        f_back.f_code.co_name == '<module>')
-
-        to_print = True if self.debug & (frame_is_top | save_steps) else False
-
-        if save_steps:
-            if not dir().__contains__('self.image_stack'):
-                self.image_stack = []
-
-        for i, method in enumerate(self.queue['methods']):
-            in_kwargs = self.queue['args'][i]
-            n = self.queue['repeats'][i]
-
-            if to_print:
-                print(method.__name__ + ':', end=' ')
-
-            for i in range(0, n):
-                method(**in_kwargs)
-                if save_steps:
-                    self.image_stack.append(self.out.copy())
-                if to_print:
-                    print(i + 1, end=' ')
-            if to_print:
-                print("done")
-
-    def build_stacks(self, n, save_steps):
-        """Makes an image stack by running the pipeline n times,
-        saving intermediate steps if save_steps is true"""
-
-        self.image_stack = []
-
-        to_print = True if (self.debug & save_steps is not True) else False
-
-        if to_print:
-            print('Building image: ', end=' ')
-        for j in range(0, n):
-            if to_print:
-                print(j + 1, end=' ')
-            self._newImage(self.border)
-            self.run_queue(save_steps=save_steps)
-            self.image_stack.append(self.out)
-        if to_print:
-            print('done')
-
-    def build_multipliers(self, plot_list, **kwargs):
-        """Plots the point queue repeatedly with multipliers from list set"""
-        self.image_stack = []
-
-        to_print = self.debug
-        reverse = kwargs.get('reverse', True)
-        reverse_list = kwargs.get('reverse_list', False)
-        if reverse_list:
-            self.pointQueue = sorted(self.pointQueue, key=lambda k: k['r'])
-        n = len(plot_list)
-        if to_print:
-            print('Building image: ', end=' ')
-        for j in range(0, n):
-            if to_print:
-                print(j + 1, end=' ')
-            self._plotQueue(plot_list[j])
-            self.image_stack.append(self.out)
-
-        if reverse:
-            self.image_stack += self.image_stack[::-1]
-
-        if to_print:
-            print('done')
-
-    def save_gif(self, location, step_duration, **kwargs):
-        """Save a gif of the image stack with step_duration"""
-
-        arrays = []
-        for out in self.image_stack:
-            arrays.append(np.array(out))
-
-        imageio.mimsave(location, arrays, format='gif', duration=step_duration)
-
-
-class pointillizePile(pointillizeStack):
-    """Subclass of pointillizeStack for operating serially on images"""
-
-    def __init__(self, *args, **kwargs):
-
-        location = kwargs.get('location', False)
-        if location is False:
-            raise ValueError('Must declare directory to initialize')
-        else:
-            self.pile_filenames = []
-            if os.path.isdir(location):
-                for file in os.listdir(location):
-                    if file.endswith(".jpg") | file.endswith(".JPG") | file.endswith(".jpeg") | file.endswith(".JPEG"):
-                        self.pile_filenames.append(location + file)
-            else:
-                raise ValueError('Must declare directory to initialize')
-
-        self.outputs_store = []
-        self.inputs_store = []
-        self.filenames_store = []
-        self._kwargs = kwargs
-        self._args = args
-        self._init_pointilize(index=0)
-
-    def _init_pointilize(self, index):
-
-        args = self._args
-        kwargs = self._kwargs
-        kwargs['location'] = self.pile_filenames[index]
-        pointillize.__init__(self, *args, **kwargs)
-
-    def display(self, **kwargs):
-        """Displays browser-size version of outputs, or original images
-        if original=True"""
-
-        original = kwargs.get('original', False)
-        for i in range(len(self.inputs_store)):
-            image = self.inputs_store[i] if original else self.outputs_store[i]
-            print(self.filenames_store[i])
-            ratio = 500/(image.size[0]**2 + image.size[1]**2)**0.5
-            display(image.resize(
-                    [int(image.size[0] * ratio), int(image.size[1] * ratio)]))
-
-    def run_pile_images(self, location, **kwargs):
-        """Process and save files to location"""
-
-        print('Batch processing image:', end=' ')
-        start=time.time()
-        for i in range(0, len(self.pile_filenames)):
-            print(i + 1, end=' ')
-            self._init_pointilize(i)
-            self.run_queue()
-            self.save_out(location, **kwargs)
-            self.filenames_store.append(self.filename)
-            self.inputs_store.append(self.image)
-            self.outputs_store.append(self.out)
-        print('done....took %0.2f seconds' % (time.time()-start))
-
-
-    def run_pile_gifs(self, location, n, save_steps, step_duration, **kwargs):
-
-        suffix = kwargs.get('suffix', '')
-
-        if os.path.isdir(location) is not True:
-            os.makedirs(location)
-
-        for i in range(0, len(self.pile_filenames)):
-            print(i + 1, end=' ')
-            self._init_pointilize(i)
-            self.build_stacks(n, save_steps)
-            self.save_gif(location + '/' + self.filename.split('/')[1] +
-                          ' ' + suffix + '.gif', step_duration, **kwargs)
-
-    def run_pile_multipliers(self, location, multipliers,
-                             step_duration, **kwargs):
-
-        suffix = kwargs.get('suffix', '')
-        reverse = kwargs.get('reverse', False)
-
-        if os.path.isdir(location) is not True:
-            os.makedirs(location)
-
-        for i in range(0, len(self.pile_filenames)):
-            print(i + 1, end=' ')
-            self._init_pointilize(i)
-            self.run_queue()
-            self.build_multipliers(multipliers, reverse=reverse)
-            self.save_gif(location + '/' + self.filename.split('/')[1] +
-                          ' ' + suffix + '.gif', step_duration, **kwargs)
