@@ -2,10 +2,6 @@
 
 ## Current
 
-Tonight
-* Get up on github
-* Get up on PyPi
-
 Remaining
 * Github
   * Setup tests and CI
