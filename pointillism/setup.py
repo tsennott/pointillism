@@ -19,6 +19,7 @@ setuptools.setup(
         'IPython',
         'matplotlib',
         'imageio',
+        'scipy',
     ],
     test_suite='nose.collector',
     tests_require=['nose'],
