@@ -22,7 +22,7 @@ setuptools.setup(
         'scipy',
     ],
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=['nose', 'mock'],
     license='MIT',
     classifiers=[
         "Programming Language :: Python :: 3",

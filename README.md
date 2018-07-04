@@ -1,4 +1,4 @@
-# Pointillism [![Build Status](https://travis-ci.org/tsennott/pointillism.svg?branch=master)](https://travis-ci.org/tsennott/pointillism) [![Coverage Status](https://coveralls.io/repos/github/tsennott/pointillism/badge.svg?branch=master)](https://coveralls.io/github/tsennott/pointillism?branch=master)
+# Pointillism [![Build Status](https://travis-ci.org/tsennott/pointillism.svg?branch=master)](https://travis-ci.org/tsennott/pointillism) [![Coverage Status](https://coveralls.io/repos/github/tsennott/pointillism/badge.svg?branch=master&service=github)](https://coveralls.io/github/tsennott/pointillism?branch=master)
 Image manipulation for various "pointillism" effects, built from scratch in Python. Image handling courtesy of Pillow. 
 
 Under active development. Please let me know if you have feedback.

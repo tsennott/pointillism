@@ -1,8 +1,8 @@
 from unittest import TestCase
 import os
 import shutil
-
 import pointillism as pt
+from mock import patch
 
 
 class TestImage(TestCase):
@@ -26,6 +26,13 @@ class TestImage(TestCase):
         # test
         self.assertEqual(self.point.image.size, (1000, 500), "image wrong size")
 
+    def test_generate_random_points(self):
+
+        n = 1000
+        # resize
+        locations = self.point._generateRandomPoints(n)
+        self.assertEqual(len(locations), n, "wrong number of points")
+
     def test_basic_make_method_and_save_options(self):
 
         # make
@@ -47,7 +54,8 @@ class TestImage(TestCase):
         # test
         self.assertEqual(files, desired_files, "file names don't match")
 
-    def test_display_and_plot_methods_plus_alpha_and_nongradient(self):
+    @patch("matplotlib.pyplot.show")
+    def test_display_and_plot_methods_plus_alpha_and_nongradient(self, mock_show):
 
         # test enhance
         self.point.enhance('contrast', 1.1)
@@ -56,9 +64,10 @@ class TestImage(TestCase):
 
         # make, including use of deprecated _getComplexity method
         self.point.crop(aspect=[1000, 500], resize=True)
+        self.point.plotRecPoints(fill=True)
         self.point.plotRandomPointsComplexity(
             n=1e4, constant=0.012, power=3,
-            use_tranparency=True, use_gradient=False, min_size=0.002)
+            use_transparency=True, use_gradient=False, min_size=0.002)
 
         # display
         self.point.display()
@@ -67,10 +76,10 @@ class TestImage(TestCase):
         self.point.display('gradient')
 
         # debug plot methods
-        # self.point._plotComplexity()
-        # self.point._plotIterations()
-        # self.point._plotBubbleSize()
-        # self.point._plotAlpha()
+        self.point._plotComplexity()
+        self.point._plotIterations()
+        self.point._plotBubbleSize()
+        self.point._plotAlpha()
 
 
 class TestPipeline(TestCase):
@@ -117,11 +126,12 @@ class TestBatch(TestCase):
 
     def test_batch_images(self):
 
-        # make images
+        # make images and test showing them
         self.point.new_queue()
         self.point.add_to_queue(self.point.crop, {'aspect': [1000, 500], 'resize': True}, 1)
         self.point.add_to_queue(self.point.make, {'setting': 'balanced'}, 1)
         self.point.run_pile_images(location=self.directory, suffix='bulk')
+        self.point.display()
 
         # get filenames
         files = sorted(os.listdir(self.directory))

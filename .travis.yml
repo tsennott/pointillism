@@ -2,13 +2,12 @@ language: python
 python:
   - "3.6"
 
-# command to install dependencies
 install:
   - pip install coveralls
 
-# command to run tests
-#script: python pointillism/setup.py test
-before_script: cd pointillism
+before_script: 
+  - cd pointillism
+
 script: coverage run --source pointillism setup.py test
 
 after_success:
