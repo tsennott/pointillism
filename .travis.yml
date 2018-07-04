@@ -7,6 +7,9 @@ install:
 
 before_script: 
   - cd pointillism
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 5 # give xvfb some time to start
 
 script: coverage run --source pointillism setup.py test
 
