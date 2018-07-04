@@ -1,4 +1,4 @@
-# Pointillism
+# Pointillism [![Build Status](https://travis-ci.org/tsennott/pointillism.svg?branch=master)](https://travis-ci.org/tsennott/pointillism)
 Image manipulation for various "pointillism" effects, built from scratch in Python. Image handling courtesy of Pillow. 
 
 Under active development. Please let me know if you have feedback.

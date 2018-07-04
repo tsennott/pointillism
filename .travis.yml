@@ -7,8 +7,8 @@ install:
   - pip install coveralls
 
 # command to run tests
-script: python pointillism/setup.py test
-#script: coverage run --source cookiecutter pointillism/setup.py test
+#script: python pointillism/setup.py test
+script: coverage run --source cookiecutter pointillism/setup.py test
 
-#after_success:
-#    coveralls
+after_success:
+    coveralls
