@@ -23,17 +23,17 @@ Install with `pip install pointillism`
 ## Basic usage
 Making a pointillized image with default presets 
 ```
-# import 
+# Import 
 import pointillism as pt
 
-# initialize
+# Initialize
 point = pt.image(image_location)
 
-# render
+# Render
 # optional setting can be 'balanced', 'fine', 'ultrafine', 'coarse', or 'uniform'
 point.make() 
 
-# save
+# Save
 # or point.display() if using IPython
 point.save_out(image_location) 
 ```
