@@ -8,7 +8,7 @@ install:
 
 # command to run tests
 #script: python pointillism/setup.py test
-script: coverage run --source cookiecutter pointillism/setup.py test
+script: coverage run --source pointillism/pointillism pointillism/setup.py test
 
 after_success:
     coveralls
