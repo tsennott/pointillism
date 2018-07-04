@@ -33,7 +33,7 @@ class image:
         """
 
         # Set debug state and initialize default params
-        self.debug = kwargs.get('debug', False)
+        self.debug = debug
         self.params = {}
         self.params['reduce_factor'] = kwargs.get('reduce_factor', 2)
         self.params['increase_factor'] = kwargs.get('increase_factor', 1)
@@ -129,17 +129,6 @@ class image:
                 'PlotPointsComplexity': {'constant': 0.005, 'power': 3, 'grad_size': .006, 'min_size': 0.0005}
             },
         }
-
-    def _print_attributes(self):
-        """Prints non-hidden object parameters"""
-
-        variables = vars(self)
-        for var in variables:
-            if var[0] != '_':
-                if var == 'array':
-                    print(var, ': ', '1 numpy array   ')
-                else:
-                    print(var, ': ', variables[var])
 
     def crop(self, aspect, resize=False, direction='height'):
         """Crops and resizes in the dimension specified ('height' or 'width')"""

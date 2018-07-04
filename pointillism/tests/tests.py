@@ -8,7 +8,7 @@ import pointillism as pt
 class TestImage(TestCase):
 
     def setUp(self):
-        self.point = pt.image('../media/images/pfieffer.jpg', border=0)
+        self.point = pt.image('tests/images/pfieffer.jpg', border=0, debug=True)
         self.directory = 'test_image_results'
 
     def tearDown(self):
@@ -38,20 +38,45 @@ class TestImage(TestCase):
         # save
         self.point.save_out(location=self.directory, suffix='suffix', prefix='prefix_')
         self.point.save_out(location=self.directory, name='test_image.png')
-        files = os.listdir(self.directory).sort()
-        desired_files = [
+        files = sorted(os.listdir(self.directory))
+        desired_files = sorted([
             'prefix_pfieffer.jpg - suffix.png',
             'test_image.png'
-        ].sort()
+        ])
 
         # test
         self.assertEqual(files, desired_files, "file names don't match")
+
+    def test_display_and_plot_methods_plus_alpha_and_nongradient(self):
+
+        # test enhance
+        self.point.enhance('contrast', 1.1)
+        self.point.enhance('sharpness', 1.1)
+        self.point.enhance('color', 1.1)
+
+        # make, including use of deprecated _getComplexity method
+        self.point.crop(aspect=[1000, 500], resize=True)
+        self.point.plotRandomPointsComplexity(
+            n=1e4, constant=0.012, power=3,
+            use_tranparency=True, use_gradient=False, min_size=0.002)
+
+        # display
+        self.point.display()
+        self.point.display('original')
+        self.point.display('coverage')
+        self.point.display('gradient')
+
+        # debug plot methods
+        # self.point._plotComplexity()
+        # self.point._plotIterations()
+        # self.point._plotBubbleSize()
+        # self.point._plotAlpha()
 
 
 class TestPipeline(TestCase):
 
     def setUp(self):
-        self.point = pt.pipeline('../media/images/pfieffer.jpg', border=0)
+        self.point = pt.pipeline('tests/images/pfieffer.jpg', border=0, debug=True)
         self.directory = 'test_image_results'
 
     def tearDown(self):
@@ -77,13 +102,65 @@ class TestPipeline(TestCase):
         self.point.make_gif(kind='loop', location=self.directory,
                             size=ratio, crop=False, prefix='multiplier_')
 
+
+class TestBatch(TestCase):
+
+    def setUp(self):
+        self.point = pt.batch('tests/images', border=0, debug=True)
+        self.directory = 'test_image_results'
+
+    def tearDown(self):
+        try:
+            shutil.rmtree(self.directory)
+        except Exception as e:
+            pass
+
+    def test_batch_images(self):
+
+        # make images
+        self.point.new_queue()
+        self.point.add_to_queue(self.point.crop, {'aspect': [1000, 500], 'resize': True}, 1)
+        self.point.add_to_queue(self.point.make, {'setting': 'balanced'}, 1)
+        self.point.run_pile_images(location=self.directory, suffix='bulk')
+
         # get filenames
-        files = os.listdir(self.directory).sort()
-        desired_files = [
-            'animated_assembly.gif',
-            'pfieffer.jpg - pointillized.gif',
-            'multiplier_pfieffer.jpg - pointillized.gif',
-        ].sort()
+        files = sorted(os.listdir(self.directory))
+        desired_files = sorted([
+            'IMG_0116.jpg - bulk.png',
+            'pfieffer.jpg - bulk.png',
+        ])
+
+        # test
+        self.assertEqual(files, desired_files, "file names don't match")
+
+    def test_batch_gifs(self):
+
+        # make asssembly gifs
+        self.point.new_queue()
+        self.point.add_to_queue(self.point.crop, {'aspect': [1000, 500], 'resize': True}, 1)
+        self.point.add_to_queue(self.point.make_gif, {'kind': 'assembly',
+                                                      'location': 'media/gifs',
+                                                      'bulk': True}, 1)
+        self.point.run_pile_gifs(location=self.directory, save_steps=True,
+                                 suffix='bulk_assembly')
+
+        # make multiplier gifs
+        self.point.new_queue()
+        self.point.add_to_queue(self.point.crop, {'aspect': [1000, 500], 'resize': True}, 1)
+        self.point.add_to_queue(self.point.make_gif, {'kind': 'multiplier',
+                                                      'location': 'media/gifs',
+                                                      'bulk': True}, 1)
+        self.point.run_pile_gifs(location=self.directory, save_steps=True,
+                                 suffix='bulk_multiplier')
+
+        # get filenames
+        files = sorted(os.listdir(self.directory))
+        desired_files = sorted([
+            'IMG_0116.jpg - bulk_assembly.gif',
+            'IMG_0116.jpg - bulk_multiplier.gif',
+            'pfieffer.jpg - bulk_assembly.gif',
+            'pfieffer.jpg - bulk_multiplier.gif',
+        ])
 
         # test
         self.assertEqual(files, desired_files, "file names don't match")

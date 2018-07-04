@@ -13,9 +13,8 @@ import time
 class batch(pipeline):
     """Subclass of pointillizeStack for operating serially on images"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, location=False, *args, **kwargs):
 
-        location = kwargs.get('location', False)
         if location is False:
             raise ValueError('Must declare directory to initialize')
         else:
@@ -23,7 +22,7 @@ class batch(pipeline):
             if os.path.isdir(location):
                 for file in os.listdir(location):
                     if file.endswith(".jpg") | file.endswith(".JPG") | file.endswith(".jpeg") | file.endswith(".JPEG"):
-                        self.pile_filenames.append(location + file)
+                        self.pile_filenames.append(os.path.join(location, file))
             else:
                 raise ValueError('Must declare directory to initialize')
 
@@ -75,7 +74,7 @@ class batch(pipeline):
             os.makedirs(location)
         # Save queue
         queue = self.queue
-        print('Batch processing gif:', end=' ')
+        print('Batch processing gifs:')
         start = time.time()
         for i in range(0, len(self.pile_filenames)):
             print(i + 1, end=' ')
