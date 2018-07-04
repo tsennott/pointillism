@@ -4,13 +4,13 @@
 Single derived class for pointillism package, handles batches of files
 """
 
-from .main import main
+from .pipeline import pipeline
 from IPython.display import display
 import os
 import time
 
 
-class batch(main):
+class batch(pipeline):
     """Subclass of pointillizeStack for operating serially on images"""
 
     def __init__(self, *args, **kwargs):
@@ -39,7 +39,7 @@ class batch(main):
         args = self._args
         kwargs = self._kwargs
         kwargs['location'] = self.pile_filenames[index]
-        pointillize.__init__(self, *args, **kwargs)
+        pipeline.__init__(self, *args, **kwargs)
 
     def display(self, **kwargs):
         """Displays browser-size version of outputs, or original images
@@ -49,7 +49,7 @@ class batch(main):
         for i in range(len(self.inputs_store)):
             image = self.inputs_store[i] if original else self.outputs_store[i]
             print(self.filenames_store[i])
-            ratio = 500/(image.size[0]**2 + image.size[1]**2)**0.5
+            ratio = 500 / (image.size[0]**2 + image.size[1]**2)**0.5
             display(image.resize(
                     [int(image.size[0] * ratio), int(image.size[1] * ratio)]))
 
@@ -57,45 +57,30 @@ class batch(main):
         """Process and save files to location"""
 
         print('Batch processing image:', end=' ')
-        start=time.time()
+        start = time.time()
         for i in range(0, len(self.pile_filenames)):
             print(i + 1, end=' ')
             self._init_pointilize(i)
-            self.run_queue()
+            self._run_queue()
             self.save_out(location, **kwargs)
             self.filenames_store.append(self.filename)
             self.inputs_store.append(self.image)
             self.outputs_store.append(self.out)
-        print('done....took %0.2f seconds' % (time.time()-start))
+        print('done....took %0.2f seconds' % (time.time() - start))
 
-
-    def run_pile_gifs(self, location, n, save_steps, step_duration, **kwargs):
-
-        suffix = kwargs.get('suffix', '')
+    def run_pile_gifs(self, location, step_duration=0.1, **kwargs):
+        """Process and save files to location"""
 
         if os.path.isdir(location) is not True:
             os.makedirs(location)
-
+        # Save queue
+        queue = self.queue
+        print('Batch processing gif:', end=' ')
+        start = time.time()
         for i in range(0, len(self.pile_filenames)):
             print(i + 1, end=' ')
             self._init_pointilize(i)
-            self.build_stacks(n, save_steps)
-            self.save_gif(location + '/' + self.filename.split('/')[1] +
-                          ' ' + suffix + '.gif', step_duration, **kwargs)
-
-    def run_pile_multipliers(self, location, multipliers,
-                             step_duration, **kwargs):
-
-        suffix = kwargs.get('suffix', '')
-        reverse = kwargs.get('reverse', False)
-
-        if os.path.isdir(location) is not True:
-            os.makedirs(location)
-
-        for i in range(0, len(self.pile_filenames)):
-            print(i + 1, end=' ')
-            self._init_pointilize(i)
-            self.run_queue()
-            self.build_multipliers(multipliers, reverse=reverse)
-            self.save_gif(location + '/' + self.filename.split('/')[1] +
-                          ' ' + suffix + '.gif', step_duration, **kwargs)
+            self.queue = queue
+            self._run_queue()
+            self.save_gif(location=location, step_duration=step_duration, **kwargs)
+        print('done....took %0.2f seconds' % (time.time() - start))

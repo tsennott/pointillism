@@ -26,4 +26,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
+    keywords='image manipulation art photos pointillism illustration graphics'
 )

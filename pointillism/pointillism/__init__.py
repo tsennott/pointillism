@@ -4,8 +4,8 @@
 Pointillism module
 """
 
-from .main import main
-from .gif import gif
+from .image import image
+from .pipeline import pipeline
 from .batch import batch
 
 name = "pointillism"

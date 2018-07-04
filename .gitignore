@@ -11,6 +11,7 @@ temp
 logs
 images
 images_out
+bulk
 images_s3
 IAM User.csv
 opengl

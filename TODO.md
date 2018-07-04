@@ -2,40 +2,27 @@
 
 ## Current
 
-Main code
-* implement MP in Bulk processing
-* add use_gradient as `__init__` level argument
-* (big list below)
-* Publish as library!
+Tonight
+* Get up on github
+* Get up on PyPi
 
-Site
-* (later) fix scipy issue
-* (later) change data model for website to allow source files with child result files
-* (later) 
-
-
-
-## Main code (long list)
-
-* Expose meta grouped build method with a few presets, make a public reset function
-  * make rect a function of diagonal as well, and dial that in
-  * add ability to override settings like size (e.g. for uniform)
-  * and maybe a public debug plot grouped method (maybe)
-  * Also default grad_mult to 1 and adjust settings accordlingly
-  * Link gradient size and plotrecpoints to these settings
-
-* Massive cleanup, drop unnecesary methods, add lots of comments, etc
-  * Change all optional args to defaulted args!!
-  * organize params into dicts (like radius_list, etc etc)
-  * Wrap lots of stuff in if debug, like plotting coverage and the like
-  * Maybe drop PointillizePile? Or at least change names to be clearer
-  * Definitely drop probablity mask stuff, 
-  * Drop plotComplexityGrid and Point, in favor of displaying raw array_complexity
-  * Get rid of frame is top in favor of verbose=self.verbose?
-
-* Add explicit movie functions, and chunked movie functions, probably to second file
-  * Need to think of how to speed this up. 
-
+Remaining
+* Github
+  * Setup tests and CI
+  * Clean up working .ipynb
+* `pointillism.bulk`
+  * implement MP in Bulk processing and add to example file
+* `pointillism.movie`
+  * make this! with multiprocessing
+* Later
+  * organize `image` params into dicts (like radius_list, etc etc)
+  * for `image.make()` add ability to override settings
+  * change `frame_is_top` to verbose being passed in?
+* Pointillizer.com
+  * convert to new modularized code
+  * (later) fix scipy issue
+  * (later) change data model for website to allow source files with child result files
+  * (later) 
 
 
 ## Algorithm notes
