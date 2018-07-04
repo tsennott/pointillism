@@ -2,11 +2,10 @@
 
 ## Current
 
-Remaining
 * Github
-  * Clean up working .ipynb and make more detailed docs on more complex methods in the main example
+  * Clean up working notebooke and add more complex methods in the main notebook
 * `pointillism.bulk`
-  * implement MP in Bulk processing and add to example file
+  * implement multiprocessing add to example file
 * `pointillism.movie`
   * make this! with multiprocessing
 * Later
@@ -19,6 +18,18 @@ Remaining
   * (later) change data model for website to allow source files with child result files
   * (later) 
 
+## Deployment notes
+* For deployment with correct markdown to PyPI
+  * `python setup.py sdist`
+  * `twine upload dist/{latest version of package`
+* For running tests locally
+  * `coverage run --source pointillism setup.py test`
+  * `coverage html`
+  * `open htmlcov/index.html`
+* For clearing stupid github cached badge images
+  * `curl -X PURGE {url of cached badge image}`
+
+
 
 ## Algorithm notes
 Notes on possible automatic coverage stop (time and implement one of these)
@@ -26,6 +37,5 @@ Notes on possible automatic coverage stop (time and implement one of these)
   * Percentage black? Or rate of change of coverage vs attempted iteration?
     * Both would need to be evaluated only every x loops as they are expensive
 * Could look at slope of time vs points or interations vs points as well, that would be much cheaper
-
 
 

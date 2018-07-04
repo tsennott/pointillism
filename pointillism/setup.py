@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pointillism",
-    version="0.1.2",
+    version="0.1.4",
     author="Tim Sennott",
     author_email="timothy.sennott@gmail.com",
     description="Pointillism-style photo manipulation package",
