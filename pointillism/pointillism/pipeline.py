@@ -144,7 +144,7 @@ class pipeline(image):
                 if crop:
                     self.add_to_queue(self.crop, {'aspect': size, 'resize': True}, 1)
                 else:
-                    self.add_to_queue(self.resize, {'ratio': size, 'min_size': 0}, 1)
+                    self.add_to_queue(self.resize, {'ratio': size, 'min_size': 200}, 1)
 
             # Make
             self.add_to_queue(self.plotRecPoints, {'n': 40, 'multiplier': 1, 'fill': True}, 1)
@@ -163,7 +163,7 @@ class pipeline(image):
                 if crop:
                     self.add_to_queue(self.crop, {'aspect': size, 'resize': True}, 1)
                 else:
-                    self.add_to_queue(self.resize, {'ratio': size, 'min_size': 0}, 1)
+                    self.add_to_queue(self.resize, {'ratio': size, 'min_size': 200}, 1)
 
             # Make
             self.add_to_queue(self.make, {'setting': setting}, 1)
@@ -181,7 +181,7 @@ class pipeline(image):
                 if crop:
                     self.crop(aspect=size, resize=True)
                 else:
-                    self.resize(ratio=size, min_size=0)
+                    self.resize(ratio=size, min_size=200)
 
             # Queue up points
             self.make('balanced')

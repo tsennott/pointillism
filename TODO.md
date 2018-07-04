@@ -5,7 +5,7 @@
 Remaining
 * Github
   * Setup tests and CI
-  * Clean up working .ipynb
+  * Clean up working .ipynb and make more detailed docs on more complex methods in the main example
 * `pointillism.bulk`
   * implement MP in Bulk processing and add to example file
 * `pointillism.movie`

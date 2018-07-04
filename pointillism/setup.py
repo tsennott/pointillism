@@ -20,6 +20,8 @@ setuptools.setup(
         'matplotlib',
         'imageio',
     ],
+    test_suite='nose.collector',
+    tests_require=['nose'],
     license='MIT',
     classifiers=[
         "Programming Language :: Python :: 3",

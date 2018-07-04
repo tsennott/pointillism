@@ -185,7 +185,7 @@ class image:
         w = self.image.size[0]
         h = self.image.size[1]
         d = (h**2 + w**2)**0.5
-        ratio = max(ratio, min_size / d)
+        ratio = max(ratio, float(min_size / d))
 
         self.image = self.image.resize([int(w * ratio),
                                        int(h * ratio)])
