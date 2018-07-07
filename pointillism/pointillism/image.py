@@ -5,7 +5,7 @@ Single base class for pointillism package, handles all basic image functions
 """
 
 import numpy as np
-from PIL import Image, ImageDraw, ExifTags, ImageEnhance
+from PIL import Image, ImageDraw, ExifTags, ImageEnhance, ImageOps
 from scipy import ndimage
 from IPython.display import display
 from random import random
@@ -151,6 +151,66 @@ class image:
 
         self._build_array()
         self._newImage(self.border)
+
+    def _temp_colorize(self, image, black, white, mid=None, midpoint=128):
+        """Temporary function until my changes are pulled into Pillow"""
+
+        _color = ImageOps._color
+        _lut = ImageOps._lut
+        assert image.mode == "L"
+        assert 1 <= midpoint <= 254
+
+        # Define colors from arguments
+        black = _color(black, "RGB")
+        if mid is not None:
+            mid = _color(mid, "RGB")
+        white = _color(white, "RGB")
+
+        # Create the mapping
+        red = []
+        green = []
+        blue = []
+        if mid is None:
+            for i in range(256):
+                red.append(black[0] + i * (white[0] - black[0]) // 255)
+                green.append(black[1] + i * (white[1] - black[1]) // 255)
+                blue.append(black[2] + i * (white[2] - black[2]) // 255)
+        else:
+            range1 = range(0, midpoint)
+            range2 = range(0, 256 - midpoint)
+            for i in range1:
+                red.append(black[0] + i * (mid[0] - black[0]) // len(range1))
+                green.append(black[1] + i * (mid[1] - black[1]) // len(range1))
+                blue.append(black[2] + i * (mid[2] - black[2]) // len(range1))
+            for i in range2:
+                red.append(mid[0] + i * (white[0] - mid[0]) // len(range2))
+                green.append(mid[1] + i * (white[1] - mid[1]) // len(range2))
+                blue.append(mid[2] + i * (white[2] - mid[2]) // len(range2))
+
+        image = image.convert("RGB")
+        return _lut(image, red + green + blue)
+
+    def colormap(self, setting='cyanotype'):
+        """Converts an image to a predefined or custom color palette.
+        Setting can be 'cyanotype', or 'b&w'.
+        """
+
+        # Colormap image
+        if setting == 'cyanotype':
+            self.image = self._temp_colorize(self.image.convert('L'),
+                                             black=(32, 37, 79),
+                                             white=(255, 255, 255),
+                                             mid=(35, 52, 121),
+                                             midpoint=35)
+        elif setting == 'b&w':
+            self.image = self._temp_colorize(self.image.convert('L'),
+                                             black=(0, 0, 0),
+                                             white=(255, 255, 255))
+        else:
+            raise ValueError('Invalid setting')
+
+        # Make arrays
+        self._build_array()
 
     def enhance(self, kind='contrast', amount=1):
         """Multiplies kind ('contrast', 'sharpness', 'color') by amount"""

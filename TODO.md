@@ -2,8 +2,8 @@
 
 ## Current
 
-* Github
-  * Clean up working notebooke and add more complex methods in the main notebook
+* Features and Github
+  * Clean up working notebook and add more complex methods in the main notebook
 * `pointillism.bulk`
   * implement multiprocessing add to example file
 * `pointillism.movie`

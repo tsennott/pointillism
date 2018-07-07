@@ -81,6 +81,12 @@ class TestImage(TestCase):
         self.point._plotBubbleSize()
         self.point._plotAlpha()
 
+    def test_colormap(self):
+
+        # test colormap
+        self.point.colormap()
+        self.point.colormap(setting='b&w')
+
 
 class TestPipeline(TestCase):
 
