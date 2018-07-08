@@ -4,6 +4,7 @@
 
 * Features and Github
   * Clean up working notebook and add more complex methods in the main notebook
+  * Consider sphynx documentation?
 * `pointillism.bulk`
   * implement multiprocessing add to example file
 * `pointillism.movie`

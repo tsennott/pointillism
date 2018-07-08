@@ -152,47 +152,89 @@ class image:
         self._build_array()
         self._newImage(self.border)
 
-    def _temp_colorize(self, image, black, white, mid=None, midpoint=128):
+    def _temp_colorize(self, image, black, white, mid=None, blackpoint=0,
+                       whitepoint=255, midpoint=127):
         """Temporary function until my changes are pulled into Pillow"""
 
         _color = ImageOps._color
         _lut = ImageOps._lut
+        # Initial asserts
         assert image.mode == "L"
-        assert 1 <= midpoint <= 254
+        assert 0 <= whitepoint <= 255
+        assert 0 <= blackpoint <= 255
+        assert 0 <= midpoint <= 255
+        assert blackpoint <= whitepoint
+        if mid is not None:
+            assert blackpoint <= midpoint
+            assert whitepoint >= midpoint
 
         # Define colors from arguments
         black = _color(black, "RGB")
+        white = _color(white, "RGB")
         if mid is not None:
             mid = _color(mid, "RGB")
-        white = _color(white, "RGB")
 
-        # Create the mapping
+        # Empty lists for the mapping
         red = []
         green = []
         blue = []
-        if mid is None:
-            for i in range(256):
-                red.append(black[0] + i * (white[0] - black[0]) // 255)
-                green.append(black[1] + i * (white[1] - black[1]) // 255)
-                blue.append(black[2] + i * (white[2] - black[2]) // 255)
-        else:
-            range1 = range(0, midpoint)
-            range2 = range(0, 256 - midpoint)
-            for i in range1:
-                red.append(black[0] + i * (mid[0] - black[0]) // len(range1))
-                green.append(black[1] + i * (mid[1] - black[1]) // len(range1))
-                blue.append(black[2] + i * (mid[2] - black[2]) // len(range1))
-            for i in range2:
-                red.append(mid[0] + i * (white[0] - mid[0]) // len(range2))
-                green.append(mid[1] + i * (white[1] - mid[1]) // len(range2))
-                blue.append(mid[2] + i * (white[2] - mid[2]) // len(range2))
 
+        # Create the mapping (2-color)
+        if mid is None:
+
+            # Define ranges
+            range_low = range(0, blackpoint)
+            range_map = range(0, whitepoint - blackpoint)
+            range_high = range(0, 256 - whitepoint)
+
+            # Map
+            for i in range_low:
+                red.append(black[0])
+                green.append(black[1])
+                blue.append(black[2])
+            for i in range_map:
+                red.append(black[0] + i * (white[0] - black[0]) // len(range_map))
+                green.append(black[1] + i * (white[1] - black[1]) // len(range_map))
+                blue.append(black[2] + i * (white[2] - black[2]) // len(range_map))
+            for i in range_high:
+                red.append(white[0])
+                green.append(white[1])
+                blue.append(white[2])
+
+        # Create the mapping (3-color)
+        else:
+
+            # Define ranges
+            range_low = range(0, blackpoint)
+            range_map1 = range(0, midpoint - blackpoint)
+            range_map2 = range(0, whitepoint - midpoint)
+            range_high = range(0, 256 - whitepoint)
+
+            # Map
+            for i in range_low:
+                red.append(black[0])
+                green.append(black[1])
+                blue.append(black[2])
+            for i in range_map1:
+                red.append(black[0] + i * (mid[0] - black[0]) // len(range_map1))
+                green.append(black[1] + i * (mid[1] - black[1]) // len(range_map1))
+                blue.append(black[2] + i * (mid[2] - black[2]) // len(range_map1))
+            for i in range_map2:
+                red.append(mid[0] + i * (white[0] - mid[0]) // len(range_map2))
+                green.append(mid[1] + i * (white[1] - mid[1]) // len(range_map2))
+                blue.append(mid[2] + i * (white[2] - mid[2]) // len(range_map2))
+            for i in range_high:
+                red.append(white[0])
+                green.append(white[1])
+                blue.append(white[2])
+
+        # Return converted image
         image = image.convert("RGB")
         return _lut(image, red + green + blue)
 
     def colormap(self, setting='cyanotype'):
         """Converts an image to a predefined or custom color palette.
-        Setting can be 'cyanotype', or 'b&w'.
+        Setting can be 'cyanotype', noir, or 'b&w'.
         """
 
         # Colormap image
@@ -200,8 +242,16 @@ class image:
             self.image = self._temp_colorize(self.image.convert('L'),
                                              black=(32, 37, 79),
                                              white=(255, 255, 255),
-                                             mid=(35, 52, 121),
-                                             midpoint=35)
+                                             mid=(59, 101, 175),
+                                             blackpoint=15,
+                                             whitepoint=240,
+                                             midpoint=100)
+        elif setting == 'noir':
+            self.image = self._temp_colorize(self.image.convert('L'),
+                                             black=(6, 3, 0),
+                                             white=(231, 221, 211),
+                                             blackpoint=50,
+                                             whitepoint=215)
         elif setting == 'b&w':
             self.image = self._temp_colorize(self.image.convert('L'),
                                              black=(0, 0, 0),
@@ -497,12 +547,14 @@ class image:
 
     def make(self, setting='balanced', **kwargs):
         """Makes plots with present settings and optional arguments
-
             Possible setting values:
                 balanced, fine, ultrafine, coarse, uniform
-
         """
 
+        # Reset output
+        self._newImage(border=self.border)
+
+        # Check setting
         if setting not in self.settings.keys():
             raise Exception("Invalid setting")
 
