@@ -614,8 +614,8 @@ class image(object):
 
     def _testProbability(self, loc, use_coverage):
         if use_coverage:
-            location = (int(loc[0] + self.border), int(loc[1] + self.border))
-            probability = max(1 - self.out_coverage.getdata().getpixel(location) / 255, 0)
+            location = (loc[0] + self.border, loc[1] + self.border)
+            probability = max(1.0 - self.out_coverage.getdata().getpixel(location) / 255.0, 0.0)
 
         else:
             probability = 1
