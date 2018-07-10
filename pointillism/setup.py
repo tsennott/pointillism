@@ -14,6 +14,7 @@ setuptools.setup(
     url="https://github.com/tsennott/pointillism",
     packages=setuptools.find_packages(),
     install_requires=[
+        'future',
         'numpy',
         'Pillow',
         'IPython',
