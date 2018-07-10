@@ -17,7 +17,7 @@ setuptools.setup(
         'future',
         'numpy',
         'Pillow',
-        'IPython',
+        'IPython==5.4.0',  # LTS support for Python 2.7
         'matplotlib',
         'imageio',
         'scipy',
