@@ -4,11 +4,21 @@
 Single derived class for pointillism package, handles gifs
 """
 
+# Python 2.7 compatibility
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import range
+from future import standard_library
+# Imports
 from .image import image
 import numpy as np
 import imageio
 import inspect
 import os
+# Python 2.7 compatibility
+standard_library.install_aliases()
 
 
 class pipeline(image):

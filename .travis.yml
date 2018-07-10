@@ -1,7 +1,6 @@
 language: python
 python:
-  - "3.6"
-  - "3.7"
+  - "3.6" # note add 3.7 once it's available on Travis
   - "2.7"
 
 install:

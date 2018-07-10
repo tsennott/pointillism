@@ -4,10 +4,21 @@
 Single derived class for pointillism package, handles batches of files
 """
 
+# Python 2.7 compatibility
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import range
+from builtins import int
+from future import standard_library
+# Imports
 from .pipeline import pipeline
 from IPython.display import display
 import os
 import time
+# Python 2.7 compatibility
+standard_library.install_aliases()
 
 
 class batch(pipeline):

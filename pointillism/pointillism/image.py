@@ -4,6 +4,17 @@
 Single base class for pointillism package, handles all basic image functions
 """
 
+# Python 2.7 compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import object
+from builtins import range
+from builtins import dict
+from builtins import int
+from future import standard_library
+# Imports
 import numpy as np
 from PIL import Image, ImageDraw, ExifTags, ImageEnhance, ImageOps
 from scipy import ndimage
@@ -13,9 +24,11 @@ import os
 import time
 import inspect
 from matplotlib import pyplot as plt
+# Python 2.7 compatibility
+standard_library.install_aliases()
 
 
-class image:
+class image(object):
     """Base class for pointillizer"""
 
     def __init__(self, location=None, image=None, debug=False, **kwargs):
