@@ -12,7 +12,6 @@ from __future__ import absolute_import
 from builtins import object
 from builtins import range
 from builtins import dict
-from __builtin__ import int as int2
 from future import standard_library
 # Imports
 import numpy as np
@@ -403,15 +402,14 @@ class image(object):
         step = (w**2 + h**2)**0.5 / n
         r = step * multiplier
         if fill:
-            for x in [int(x) for x in np.linspace(0, w, w // step)]:
-                for y in [int(y) for y in np.linspace(0, h, h // step)]:
+            for x in [int(x) for x in np.linspace(0, w, int(w // step))]:
+                for y in [int(y) for y in np.linspace(0, h, int(h // step))]:
                     self._plotColorPoint([x, y], r)
                     count += 1
         else:
-
-            for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
+            for x in [int(x) for x in np.linspace(r, w - r, int(w // step))]:
                 for y in [int(y) for y in np.linspace(r, h - r,
-                                                      h // step)]:
+                                                      int(h // step))]:
                     self._plotColorPoint([x, y], r)
                     count += 1
 
@@ -614,7 +612,7 @@ class image(object):
 
     def _testProbability(self, loc, use_coverage):
         if use_coverage:
-            location = (int2(loc[0] + self.border), int2(loc[1] + self.border))
+            location = (loc[0] + self.border, loc[1] + self.border)
             probability = max(1 - self.out_coverage.getpixel(location) / 255, 0)
 
         else:

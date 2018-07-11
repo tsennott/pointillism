@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pointillism",
-    version="0.1.4",
+    version="0.1.5",
     author="Tim Sennott",
     author_email="timothy.sennott@gmail.com",
     description="Pointillism-style photo manipulation package",
@@ -27,6 +27,7 @@ setuptools.setup(
     license='MIT',
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 2.7",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
