@@ -17,8 +17,8 @@ setuptools.setup(
         "future",
         "numpy",
         "Pillow",
-        "IPython; python_version>='3.0'",
-        "IPython==5.4.0; python_version<'3.0",  # LTS support for Python 2.7
+        "IPython ; python_version>='3.0'",
+        "IPython==5.4.0 ; python_version<'3.0",  # LTS support for Python 2.7
         "matplotlib",
         "imageio",
         "scipy",
