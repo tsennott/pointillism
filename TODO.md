@@ -5,6 +5,9 @@
 * Features and Github
   * Clean up working notebook and add more complex methods in the main notebook
   * Consider sphynx documentation?
+* `pointillism.image`
+  * add sepia setting
+  * possible dummy base class for easier readability?
 * `pointillism.bulk`
   * implement multiprocessing add to example file
 * `pointillism.movie`
@@ -15,6 +18,7 @@
   * change `frame_is_top` to verbose being passed in?
 * Pointillizer.com
   * convert to new modularized code
+  * add hidden div for image manipulation (3x)
   * (later) fix scipy issue
   * (later) change data model for website to allow source files with child result files
   * (later) 
