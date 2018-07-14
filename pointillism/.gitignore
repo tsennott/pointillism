@@ -9,3 +9,6 @@
 
 # Build directory
 /build
+
+# Eggs
+/*.eggs

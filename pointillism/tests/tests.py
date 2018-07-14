@@ -1,8 +1,21 @@
+"""
+Tests for pointillism module
+"""
+
+# Python 2.7 compatibility
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+# Imports
 from unittest import TestCase
 import os
 import shutil
 import pointillism as pt
 from mock import patch
+# Python 2.7 compatibility
+standard_library.install_aliases()
 
 
 class TestImage(TestCase):

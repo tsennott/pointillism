@@ -1,9 +1,17 @@
-#! /usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Single base class for pointillism package, handles all basic image functions
 """
 
+# Python 2.7 compatibility
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import object
+from builtins import range
+from builtins import dict
+from future import standard_library
+# Imports
 import numpy as np
 from PIL import Image, ImageDraw, ExifTags, ImageEnhance, ImageOps
 from scipy import ndimage
@@ -13,9 +21,11 @@ import os
 import time
 import inspect
 from matplotlib import pyplot as plt
+# Python 2.7 compatibility
+standard_library.install_aliases()
 
 
-class image:
+class image(object):
     """Base class for pointillizer"""
 
     def __init__(self, location=None, image=None, debug=False, **kwargs):
@@ -390,15 +400,14 @@ class image:
         step = (w**2 + h**2)**0.5 / n
         r = step * multiplier
         if fill:
-            for x in [int(x) for x in np.linspace(0, w, w // step)]:
-                for y in [int(y) for y in np.linspace(0, h, h // step)]:
+            for x in [int(x) for x in np.linspace(0, w, int(w // step))]:
+                for y in [int(y) for y in np.linspace(0, h, int(h // step))]:
                     self._plotColorPoint([x, y], r)
                     count += 1
         else:
-
-            for x in [int(x) for x in np.linspace(r, w - r, w // step)]:
+            for x in [int(x) for x in np.linspace(r, w - r, int(w // step))]:
                 for y in [int(y) for y in np.linspace(r, h - r,
-                                                      h // step)]:
+                                                      int(h // step))]:
                     self._plotColorPoint([x, y], r)
                     count += 1
 
@@ -602,7 +611,7 @@ class image:
     def _testProbability(self, loc, use_coverage):
         if use_coverage:
             location = (loc[0] + self.border, loc[1] + self.border)
-            probability = max(1 - self.out_coverage.getdata().getpixel(location) / 255, 0)
+            probability = max(1 - self.out_coverage.getpixel(location) / 255, 0)
 
         else:
             probability = 1
