@@ -98,6 +98,7 @@ class TestImage(TestCase):
 
         # test colormap
         self.point.colormap()
+        self.point.colormap(setting='sepia')
         self.point.colormap(setting='noir')
         self.point.colormap(setting='b&w')
 
