@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404, render
-from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from django.views.decorators.csrf import csrf_exempt
@@ -10,10 +9,11 @@ from myproject.myapp.models import Document
 from myproject.myapp.models import User
 from myproject.myapp.forms import DocumentForm
 
-from myproject.myapp.pointillism import pointillize, pointillizeStack
-from PIL import Image
-import os
+from myproject.myapp.image import image
+from myproject.myapp.pipeline import pipeline
 
+from PIL import Image
+from datetime import datetime
 import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -37,20 +37,44 @@ def upload(request, guid_id):
         if form.is_valid():
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
-            point = pointillize(image=orig_image, reduce_factor=2)
+            point = image(image=orig_image, reduce_factor=2)
             # point.plotRecPoints(n=40, multiplier=1, fill=False)
             # point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             point.resize(ratio=0, min_size=2200)
-            setting = request.POST['setting']
-            point.plot(setting)
+            detail = request.POST['detail']
+            colormap = request.POST['colormap']
+            enhancement = request.POST['enhancement']
+            if colormap != "none":
+                point.colormap(colormap)
+                point.enhance('contrast', 1.3)
+            if enhancement != "none":
+                if enhancement == 'contrast1':
+                    point.enhance('contrast', 1.3)
+                elif enhancement == 'contrast2':
+                    point.enhance('contrast', 2)
+                elif enhancement == 'color1':
+                    point.enhance('color', 1.3)
+                elif enhancement == 'color2':
+                    point.enhance('color', 2)
+                elif enhancement == 'both1':
+                    point.enhance('color', 1.3)
+                    point.enhance('contrast', 1.3)
+                elif enhancement == 'both2':
+                    point.enhance('color', 2)
+                    point.enhance('contrast', 2)
+            point.make(detail)
             new_stringIO = io.BytesIO()
             point.out.convert('RGB').save(new_stringIO,
                                           orig_file.content_type.split('/')
                                           [-1].upper())
+            datestamp = datetime.strftime(datetime.now(), '%Y%m%d%H%M')
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
-                                             ' ' + setting  +
+                                             ' ' + detail +
+                                             ' ' + colormap +
+                                             ' ' + enhancement +
+                                             ' ' + datestamp +
                                              ' pointillized.jpg'),
                                             orig_file.content_type,
                                             None,
@@ -108,17 +132,17 @@ def gif(request, guid_id):
         if form.is_valid():
             orig_file = request.FILES['docfile']
             orig_image = Image.open(orig_file)
-            point = pointillizeStack(image=orig_image, reduce_factor=2,
-                                     border=0, queue=True)
+            point = pipeline(image=orig_image, reduce_factor=2,
+                             border=0, queue=True)
             point.resize(0, 550)
-            point.plot('balanced')
+            point.make('balanced')
             multipliers = [5, 4.5, 4, 3.5, 3, 2.6, 2.3, 2, 1.75,
                            1.5, 1.25, 1.1, 1, 1]
             multipliers.reverse()
             point.build_multipliers(multipliers, reverse=True)
             # point.save_gif('temp/' + guid_id + '_pointqueue.gif', 0.1)
             new_gif_IO = io.BytesIO()
-            point.save_gif(new_gif_IO, 0.1)
+            point.save_gif(direct=new_gif_IO, step_duration=0.1)
             new_file = InMemoryUploadedFile(new_gif_IO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
@@ -151,4 +175,3 @@ def gif(request, guid_id):
         'upload_to_gif.html',
         {'documents': documents, 'form': form, 'guid_id': user.pk}
     )
-

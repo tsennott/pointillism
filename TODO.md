@@ -17,11 +17,10 @@
   * for `image.make()` add ability to override settings
   * change `frame_is_top` to verbose being passed in?
 * Pointillizer.com
-  * convert to new modularized code
-  * add hidden div for image manipulation (3x)
+  * (later) add django tests
   * (later) fix scipy issue
-  * (later) change data model for website to allow source files with child result files
-  * (later) 
+  * (later) add image detail page with source image and add/edit/delete
+    * must change data model to allow source files with child result files
 
 ## Deployment notes
 * For deployment with correct markdown to PyPI
