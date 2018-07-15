@@ -244,7 +244,7 @@ class image(object):
 
     def colormap(self, setting='cyanotype'):
         """Converts an image to a predefined or custom color palette.
-        Setting can be 'cyanotype', noir, or 'b&w'.
+        Setting can be 'cyanotype', 'sepia', 'noir, or 'b&w'.
         """
 
         # Colormap image
@@ -256,6 +256,14 @@ class image(object):
                                              blackpoint=15,
                                              whitepoint=240,
                                              midpoint=100)
+        elif setting == 'sepia':
+            self.image = self._temp_colorize(self.image.convert('L'),
+                                             black=(0, 0, 0),
+                                             white=(255, 255, 215),
+                                             mid=(112, 66, 20),
+                                             blackpoint=0,
+                                             whitepoint=240,
+                                             midpoint=60)
         elif setting == 'noir':
             self.image = self._temp_colorize(self.image.convert('L'),
                                              black=(6, 3, 0),
