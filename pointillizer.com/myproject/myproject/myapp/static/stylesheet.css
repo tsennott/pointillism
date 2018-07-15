@@ -43,7 +43,7 @@ body {
     border:none;
 }
 
-#button:hover {
+.no-touchevents #button:hover {
     box-shadow: 0px 0px 4px lightgrey
 }
 
@@ -59,7 +59,7 @@ body {
     border:none;
 }
 
-#button2:hover {
+.no-touchevents #button2:hover {
     box-shadow: 0px 0px 4px lightgrey
 }
 
@@ -76,7 +76,7 @@ body {
     border:none;
 }
 
-#showhidebutton:hover {
+.no-touchevents #showhidebutton:hover {
     color:black;
 }
 

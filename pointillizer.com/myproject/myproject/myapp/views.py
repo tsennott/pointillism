@@ -46,6 +46,7 @@ def upload(request, guid_id):
             enhancement = request.POST['enhancement']
             if colormap != "none":
                 point.colormap(colormap)
+                point.enhance('contrast', 1.3)
             if enhancement != "none":
                 if enhancement == 'contrast1':
                     point.enhance('contrast', 1.3)
