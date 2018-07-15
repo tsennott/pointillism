@@ -17,7 +17,6 @@
   * for `image.make()` add ability to override settings
   * change `frame_is_top` to verbose being passed in?
 * Pointillizer.com
-  * convert to new modularized code
   * add hidden div for image manipulation (3x)
   * (later) fix scipy issue
   * (later) change data model for website to allow source files with child result files
