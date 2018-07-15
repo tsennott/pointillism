@@ -18,9 +18,9 @@
   * change `frame_is_top` to verbose being passed in?
 * Pointillizer.com
   * add hidden div for image manipulation (3x)
+  * (later) add tests
   * (later) fix scipy issue
   * (later) change data model for website to allow source files with child result files
-  * (later) 
 
 ## Deployment notes
 * For deployment with correct markdown to PyPI

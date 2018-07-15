@@ -6,6 +6,14 @@
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static "stylesheet.css" %}">
         <script type="text/javascript"> 
+            function showHideOptions() {
+                var x = document.getElementById("options");
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
             function showHide() {
                 var x = document.getElementById("loadingimage");
                 if (x.style.display === "none") {
@@ -17,7 +25,7 @@
         </script>
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     </head>
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <body>
     <div class="main">
         <!-- Title section -->
@@ -33,21 +41,42 @@
         </div>
 
         <!-- Image upload section-->
-        <h2>Upload an image:</h2>
+        <div class="image_title"><h2>Upload an image:</h2></div>
+        <button id="showhidebutton" onclick="showHideOptions()">show/hide optional settings</button>
         <form action="{% url "upload" guid_id=guid_id %}" method="post" enctype="multipart/form-data" id="form">
 
             <p><input type="file" name="docfile" id="button" style="width: 200px" />
-            <p><select id="button" name="setting">
-                  <option value="balanced" selected >(optional) choose a setting</option>
-                  <option value="balanced">Balanced (default)</option>
-                  <option value="fine">Fine</option>
-                  <option value="ultrafine">Ultrafine</option>
-                  <option value="coarse">Coarse</option>
-                  <option value="uniform">Uniform</option>
+            <div id="options" style="display:none">
+                <p><select id="button2" name="detail">
+                    <option value="balanced" selected >(optional) choose a detail level</option>
+                    <option value="balanced">Balanced (default)</option>
+                    <option value="fine">Fine</option>
+                    <option value="ultrafine">Ultrafine</option>
+                    <option value="coarse">Coarse</option>
+                    <option value="uniform">Uniform</option>
                 </select>
-            <p><input type="submit" value="Upload!" id="button" onclick='showHide()'></p>
+                <p><select id="button2" name="colormap">
+                    <option value="none" selected >(optional) choose a colormap</option>
+                    <option value="none">Original (default)</option>
+                    <option value="cyanotype">Cyanotype</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="noir">Noir</option>
+                    <option value="b&w">Black and White</option>
+                </select>
+                <p><select id="button2" name="enhancement">
+                    <option value="none" selected >(optional) image adjustment</option>
+                    <option value="none">None (default)</option>
+                    <option value="contrast1">Contrast (moderate)</option>
+                    <option value="contrast2">Contrast (extreme)</option>    
+                    <option value="color1">Color (moderate)</option>
+                    <option value="color2">Color (extreme)</option>
+                    <option value="both1">Contrast+Color (moderate)</option>
+                    <option value="both2">Contrast+Color (extreme)</option>
+                </select>
+            </div>
+            <p><input type="submit" value="Upload!" id="button" onclick="showHide()"></p>
         </form>
-            <div id="loadingimage" class="blink" style="display:none;">
+            <div id="loadingimage" class="blink" style="display:none">
                 Loading, please wait...
             </div>
 

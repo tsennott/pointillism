@@ -13,7 +13,7 @@ from myproject.myapp.image import image
 from myproject.myapp.pipeline import pipeline
 
 from PIL import Image
-
+from datetime import datetime
 import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -41,16 +41,39 @@ def upload(request, guid_id):
             # point.plotRecPoints(n=40, multiplier=1, fill=False)
             # point.plotRandomPointsComplexity(n=2e4, constant=0.01, power=1.3)
             point.resize(ratio=0, min_size=2200)
-            setting = request.POST['setting']
-            point.make(setting)
+            detail = request.POST['detail']
+            colormap = request.POST['colormap']
+            enhancement = request.POST['enhancement']
+            if colormap != "none":
+                point.colormap(colormap)
+            if enhancement != "none":
+                if enhancement == 'contrast1':
+                    point.enhance('contrast', 1.3)
+                elif enhancement == 'contrast2':
+                    point.enhance('contrast', 2)
+                elif enhancement == 'color1':
+                    point.enhance('color', 1.3)
+                elif enhancement == 'color2':
+                    point.enhance('color', 2)
+                elif enhancement == 'both1':
+                    point.enhance('color', 1.3)
+                    point.enhance('contrast', 1.3)
+                elif enhancement == 'both2':
+                    point.enhance('color', 2)
+                    point.enhance('contrast', 2)
+            point.make(detail)
             new_stringIO = io.BytesIO()
             point.out.convert('RGB').save(new_stringIO,
                                           orig_file.content_type.split('/')
                                           [-1].upper())
+            datestamp = datetime.strftime(datetime.now(), '%Y%m%d%H%M')
             new_file = InMemoryUploadedFile(new_stringIO,
                                             u"docfile",  # change this?
                                             (orig_file.name.split('.')[0] +
-                                             ' ' + setting +
+                                             ' ' + detail +
+                                             ' ' + colormap +
+                                             ' ' + enhancement +
+                                             ' ' + datestamp +
                                              ' pointillized.jpg'),
                                             orig_file.content_type,
                                             None,

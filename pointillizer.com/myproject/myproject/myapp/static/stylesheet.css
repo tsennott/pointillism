@@ -44,8 +44,40 @@ body {
 }
 
 #button:hover {
-    /*background:lightgrey;
-    box-shadow: 0px 0px 1px #777;*/
+    box-shadow: 0px 0px 4px lightgrey
+}
+
+#button2 {
+    background-color: lightgrey;
+    padding: 6px;
+    border-radius:6px;
+    /*color: #fff;*/
+    -webkit-appearance: none;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    border:none;
+}
+
+#button2:hover {
+    box-shadow: 0px 0px 4px lightgrey
+}
+
+#showhidebutton {
+    color: darkgrey;
+    background-color: white;
+    padding: 0px;
+    border-radius:0px;
+    /*color: #fff;*/
+    -webkit-appearance: none;
+    font-size: 10pt;
+    text-decoration: none;
+    cursor: pointer;
+    border:none;
+}
+
+#showhidebutton:hover {
+    color:black;
 }
 
 .images {

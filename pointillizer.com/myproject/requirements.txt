@@ -36,5 +36,6 @@ typing==3.6.2
 wcwidth==0.1.7
 wincertstore==0.2
 sorl-thumbnail==12.4.1
+future==0.16.0
 #matplotlib==2.1.0
 #scipy==0.18.1
