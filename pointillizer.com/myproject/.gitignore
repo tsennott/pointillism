@@ -1,5 +1,5 @@
 *.pyc
-settings.py
+secrets.py
 
 # Elastic Beanstalk Files
 
