@@ -16,9 +16,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 # import secrets from a secret file
-from secrets import SECRET_KEY, SECRET_ALLOWED_HOSTS
-from secrets import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-from secrets import AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME
+from .secrets import SECRET_KEY, SECRET_ALLOWED_HOSTS
+from .secrets import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+from .secrets import AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
