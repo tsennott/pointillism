@@ -1,22 +1,20 @@
 branch-defaults:
-  default:
+  tbs-new-aws-updates:
     environment: myproject
-    group_suffix: null
 environment-defaults:
   myproject:
     branch: null
     repository: null
 global:
   application_name: myproject
-  branch: null
-  default_ec2_keyname: null
-  default_platform: Python 3.4
+  default_ec2_keyname: myproject-mac-key
+  default_platform: arn:aws:elasticbeanstalk:us-west-2::platform/Python 3.4 running
+    on 64bit Amazon Linux/2.9.4
   default_region: us-west-2
   include_git_submodules: true
   instance_profile: null
   platform_name: null
   platform_version: null
   profile: eb-cli
-  repository: null
-  sc: null
+  sc: git
   workspace_type: Application
