@@ -16,7 +16,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 # import secrets from a secret file
-from secrets import SECRET_KEY, SECRET_RDS_HOST, SECRET_ALLOWED_HOSTS
+from secrets import SECRET_KEY, SECRET_ALLOWED_HOSTS
 from secrets import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 from secrets import AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME
 
@@ -99,8 +99,7 @@ if 'RDS_HOSTNAME' in os.environ:
             'NAME': os.environ['RDS_DB_NAME'],
             'USER': os.environ['RDS_USERNAME'],
             'PASSWORD': os.environ['RDS_PASSWORD'],
-            # 'HOST': os.environ['RDS_HOSTNAME'],
-            'HOST': SECRETS['RDS_HOSTNAME']
+            'HOST': os.environ['RDS_HOSTNAME'],
             'PORT': os.environ['RDS_PORT'],
         }
     }
