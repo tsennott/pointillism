@@ -27,7 +27,7 @@ Pygments==2.2.0
 python-dateutil==2.6.1
 pytz==2017.2
 PyYAML==3.12
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.1.11
 simplegeneric==0.8.1
 six==1.11.0
