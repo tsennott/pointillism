@@ -9,7 +9,7 @@ Django==1.11.6
 django-storages==1.6.5
 docutils==0.14
 imageio==2.2.0
-ipython==6.1.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.10.2
 jmespath==0.9.3
